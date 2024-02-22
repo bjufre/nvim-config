@@ -8,6 +8,7 @@ return {
       "nvim-treesitter/nvim-treesitter-context",
       "windwp/nvim-ts-autotag",
       "RRethy/nvim-treesitter-endwise",
+      "nvim-treesitter/playground",
     },
     config = function()
       -- local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
@@ -21,6 +22,8 @@ return {
       --   },
       -- }
 
+      vim.g.skip_ts_context_commentstring_module = true
+
       require("nvim-treesitter.configs").setup({
         -- A list of parser names, or "all"
         ensure_installed = {
@@ -31,7 +34,7 @@ return {
           "lua",
           "css",
           "scss",
-          "rust",
+          -- "rust",
           "ruby",
           "erlang",
           "eex",
@@ -47,9 +50,11 @@ return {
           "toml",
           "vue",
           "yaml",
-          "php",
+          -- "php",
           "vim",
           "jsdoc",
+          "go",
+          "templ",
         },
         -- Install parsers synchronously (only applied to `ensure_installed`)
         sync_install = false,
@@ -60,7 +65,7 @@ return {
           additional_vim_regex_highlighting = false,
           disable = { "latex" },
         },
-        context_commentstring = {
+        ts_context_commentstring = {
           enable = true,
           enable_autocmd = false,
           config = {},
@@ -107,12 +112,33 @@ return {
             "handlebars",
             "hbs",
             "blade",
+            "templ",
+            "elixir",
+            "heex",
+            "ex",
           },
         },
         endwise = {
           enable = true,
         },
-        playground = { enable = true },
+        playground = {
+          enable = true,
+          disable = {},
+          updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+          persist_queries = false, -- Whether the query persists across vim sessions
+          keybindings = {
+            toggle_query_editor = "o",
+            toggle_hl_groups = "i",
+            toggle_injected_languages = "t",
+            toggle_anonymous_nodes = "a",
+            toggle_language_display = "I",
+            focus_language = "f",
+            unfocus_language = "F",
+            update = "R",
+            goto_node = "<cr>",
+            show_help = "?",
+          },
+        },
         rainbow = { enable = false },
         incremental_selection = {
           enable = true,

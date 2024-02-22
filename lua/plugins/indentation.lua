@@ -1,9 +1,9 @@
 return {
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    enabled = true,
-    main = "ibl",
-    opts = {
+  "lukas-reineke/indent-blankline.nvim",
+  enabled = true,
+  main = "ibl",
+  config = function()
+    require("ibl").setup({
       indent = {
         char = "┊",
         smart_indent_cap = true,
@@ -16,7 +16,9 @@ return {
         show_exact_scope = false,
         injected_languages = true,
       },
-      whitespace = { remove_blankline_trail = true },
+      whitespace = {
+        remove_blankline_trail = true,
+      },
       exclude = {
         filetypes = {
           "lspinfo",
@@ -36,6 +38,6 @@ return {
           "prompt",
         },
       },
-    },
-  },
+    })
+  end,
 }

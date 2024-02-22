@@ -26,7 +26,31 @@ return {
   {
     -- Needs to happen first in order to make sure that the hook is set for `sumneko_lua`
     "folke/neodev.nvim",
-    opts = {},
+    config = function()
+      require("neodev").setup({
+        library = {
+          enabled = true, -- when not enabled, neodev will not change any settings to the LSP server
+          -- these settings will be used for your Neovim config directory
+          runtime = true, -- runtime path
+          types = true, -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
+          plugins = true, -- installed opt or start plugins in packpath
+          -- you can also specify the list of plugins to make available as a workspace library
+          -- plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
+        },
+        setup_jsonls = true, -- configures jsonls to provide completion for project specific .luarc.json files
+        -- for your Neovim config directory, the config.library settings will be used as is
+        -- for plugin directories (root_dirs having a /lua directory), config.library.plugins will be disabled
+        -- for any other directory, config.library.enabled will be set to false
+        override = function(root_dir, options) end,
+        -- With lspconfig, Neodev will automatically setup your lua-language-server
+        -- If you disable this, then you have to set {before_init=require("neodev.lsp").before_init}
+        -- in your lsp start options
+        lspconfig = true,
+        -- much faster, but needs a recent built of lua-language-server
+        -- needs lua-language-server >= 3.6.0
+        pathStrict = true,
+      })
+    end,
   },
   {
     "VonHeikemen/lsp-zero.nvim",
@@ -41,8 +65,10 @@ return {
       { "imsnif/kdl.vim" },
 
       -- Custom
-      { "sheerun/vim-polyglot" },
-      { "simrat39/rust-tools.nvim" },
+      -- TODO: Figure out why this errors everytime we start NVIM
+      -- { "sheerun/vim-polyglot" },
+
+      -- { "simrat39/rust-tools.nvim" },
       {
         "elixir-tools/elixir-tools.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
@@ -58,15 +84,6 @@ return {
         config = function()
           require("output_panel").setup()
         end,
-      },
-      { "stevearc/conform.nvim", enabled = true },
-      {
-        "mfussenegger/nvim-lint",
-        enabled = true,
-        events = {
-          "BufReadPre",
-          "BufNewFile",
-        },
       },
 
       -- Symbols Outline
@@ -96,6 +113,30 @@ return {
         },
       },
 
+      -- Folding
+      {
+        "kevinhwang91/nvim-ufo",
+        dependencies = { "kevinhwang91/promise-async" },
+        config = function()
+          require('bjufre.ufo').setup()
+        end,
+      },
+      {
+        "luukvbaal/statuscol.nvim",
+        config = function()
+          local builtin = require("statuscol.builtin")
+
+          require("statuscol").setup({
+            relculright = true,
+            segments = {
+              { text = { builtin.foldfunc }, click = "v:lua.ScFa" },
+              { text = { "%s" }, click = "v:lua.ScSa" },
+              { text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa" },
+            },
+          })
+        end,
+      },
+
       -- Ruby/Rails
       "slim-template/vim-slim",
 
@@ -121,15 +162,32 @@ return {
     },
     config = function()
       local lsp = require("lsp-zero")
-      local mason_tools_installer = require("mason-tool-installer")
 
-      lsp.preset("lsp-compe")
-      mason_tools_installer.setup({
+      lsp.set_server_config({
+        capabilities = {
+          textDocument = {
+            foldingRange = {
+              dynamicRegistration = false,
+              lineFoldingOnly = true,
+            }
+          }
+        },
+        handlers = {
+          ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" }),
+          ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" }),
+        },
+      })
+
+      lsp.on_attach(on_attach)
+
+      require("mason").setup({})
+      require("mason-lspconfig").setup({
         ensure_installed = {
           "html",
+          -- "htmx",
           "cssls",
-          "emmet_ls",
           "dockerls",
+          -- FIXME: Issue with `Noice` where the buffer is overwritten with error log
           "rubocop",
           "solargraph",
           "tailwindcss",
@@ -140,63 +198,112 @@ return {
           "eslint",
           "prettier",
           "lua_ls",
-          "rust_analyzer",
+          -- "rust_analyzer",
+          "gopls",
+          "nextls",
+          "elixirls",
         },
+        handlers = {
+          lsp.default_setup,
+          lua_ls = function()
+            require("lspconfig").lua_ls.setup(vim.tbl_deep_extend("force", lsp.nvim_lua_ls(), {
+              settings = {
+                Lua = {
+                  hint = {
+                    enable = true,
+                  },
+                },
+              },
+            }))
+          end,
+          html = function()
+            require("lspconfig").html.setup({
+              filetypes = { "html", "erb", "eruby", "eelixir", "html", "liquid", "heex", "css" },
+              settings = {},
+              init_options = {
+                embeddedLanguages = { css = true, javascript = true },
+                configurationSection = { "html", "css", "javascript" },
+              },
+            })
+          end,
+          cssls = function()
+            require("lspconfig").cssls.setup({
+              settings = {
+                css = {
+                  lint = {
+                    unknownAtRules = "ignore",
+                  },
+                },
+              },
+            })
+          end,
+          tailwindcss = function()
+            require("lspconfig").tailwindcss.setup({
+              init_options = {
+                userLanguages = {
+                  elixir = "phoenix-heex",
+                  eruby = "erb",
+                  heex = "phoenix-heex",
+                },
+              },
+              settings = {
+                tailwindCSS = {
+                  experimental = {
+                    classRegex = {
+                      [[class: "([^"]*)]],
+                    },
+                  },
+                },
+              },
+              filetypes = { "erb", "eruby", "elixir", "eelixir", "html", "liquid", "heex", "css", "slim", "haml" },
+            })
+          end
+        }
       })
 
       vim.opt.completeopt = { "menu", "menuone", "noselect" }
 
       local cmp = require("cmp")
       local cmp_select = { behavior = cmp.SelectBehavior.Select }
-      local cmp_config = lsp.defaults.cmp_config({
-        completion = {
-          -- keyword_pattern = [[\%(-\?\d\+\%(\.\d\+\)\?\|\h\w*\%(-\w*\)*\)]],
+      local cmp_action = require("lsp-zero").cmp_action()
+
+      cmp.setup({
+        snippet = {
+          expand = function(args)
+            require("luasnip").lsp_expand(args.body)
+          end,
         },
-        mapping = lsp.defaults.cmp_mappings({
+        mapping = cmp.mapping.preset.insert({
           ["<C-k>"] = cmp.mapping.select_prev_item(cmp_select),
           ["<C-j>"] = cmp.mapping.select_next_item(cmp_select),
           ["<CR>"] = cmp.mapping.confirm({
             select = true,
             behavior = cmp.ConfirmBehavior.Replace,
           }),
-          ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-          ["<C-f>"] = cmp.mapping.scroll_docs(4),
+          -- FIXME: Scrolling docs doesn't work
+          ["<C-u>"] = cmp.mapping.scroll_docs(-4),
+          ["<C-d>"] = cmp.mapping.scroll_docs(4),
           ["<C-Space>"] = cmp.mapping.complete({
             select = true,
             behavior = cmp.ConfirmBehavior.Replace,
           }),
           ["<C-e>"] = cmp.mapping.close(),
-          ["<C-h>"] = cmp.mapping(function(fallback)
-            local luasnip = require("luasnip")
-
-            if luasnip.jumpable(-1) then
-              luasnip.jump(-1)
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
-          ["<C-l>"] = cmp.mapping(function(fallback)
-            local luasnip = require("luasnip")
-
-            if luasnip.jumpable(1) then
-              luasnip.jump(1)
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
+          ["<Tab>"] = cmp_action.tab_complete(),
+          ["<S-Tab>"] = cmp_action.select_prev_or_fallback(),
         }),
         sources = {
           {
             name = "nvim_lsp",
             entry_filter = function(entry, ctx)
-              -- return require("cmp").lsp.CompletionItemKind.Snippet ~= entry:get_kind()
+              return require("cmp").lsp.CompletionItemKind.Snippet ~= entry:get_kind()
             end,
           },
-          { name = "nvim_lsp_signature_help" }, -- This will help show the popup for the signature docs
+          -- { name = "nvim_lsp_signature_help" }, -- This will help show the popup for the signature docs
           -- { name = "luasnip" }, -- Disable snippets...
           { name = "path" },
           { name = "buffer", keyword_length = 5 }, -- Wait at least until I've written 5 characters to show buffer sugg.
         },
+        -- formatting = lsp.cmp_format(),
         formatting = {
           fields = { "abbr", "kind", "menu" },
           format = function(entry, vim_item)
@@ -209,7 +316,7 @@ return {
             local sources_menu = {
               nvim_lsp = "[LSP]",
               nvim_lua = "[Lua]",
-              luasnip = "[LuaSnip]",
+              -- luasnip = "[LuaSnip]",
               buffer = "[Buffer]",
               path = "[Path]",
             }
@@ -233,164 +340,11 @@ return {
         },
       })
 
-      cmp.setup(cmp_config)
-
-      lsp.on_attach(on_attach)
-
-      lsp.configure("lua_ls", {
-        settings = {
-          Lua = {
-            hint = {
-              enable = true,
-            },
-          },
-        },
-      })
-
-      lsp.configure("cssls", {
-        settings = {
-          css = {
-            lint = {
-              unknownAtRules = "ignore",
-            },
-          },
-        },
-      })
-
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities.textDocument.completion.completionItem.snippetSupport = true
-      lsp.configure("emmet_ls", {
-        settings = {
-          capabilities = capabilities,
-          filetypes = {
-            "css",
-            "eruby",
-            "heex",
-            "eelixir",
-            "html",
-            "javascript",
-            "javascriptreact",
-            "less",
-            "sass",
-            "scss",
-            "svelte",
-            "pug",
-            "typescriptreact",
-            "vue",
-          },
-        },
-      })
-
-      lsp.setup_servers({
-        opts = {
-          handlers = {
-            ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" }),
-            ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" }),
-          },
-        },
-      })
-
-      local rust_lsp = lsp.build_options("rust_analyzer", {
-        single_file_support = false,
-        settings = {
-          ["rust-analyzer"] = {
-            diagnostics = {
-              -- Do not show the inactive diagnostic for `#[cfg]` attributes
-              disabled = { "inactive-code" },
-            },
-            cargo = {
-              buildScripts = {
-                enable = true,
-              },
-            },
-            procMacro = {
-              enable = true,
-              attributes = {
-                enable = true,
-              },
-            },
-            checkOnSave = {
-              enable = true,
-              command = "clippy",
-              extraArgs = "--fix",
-            },
-          },
-        },
-        on_attach = function(client, bufnr)
-          local remap = vim.keymap.set
-          local opts = { buffer = bufnr, noremap = true, silent = true }
-          local rt = require("rust-tools")
-
-          on_attach(client, bufnr)
-          remap("n", "K", rt.hover_actions.hover_actions, opts)
-          remap("n", "<leader>a", rt.code_action_group.code_action_group, opts)
-          remap("n", "<leader>he", rt.inlay_hints.enable, opts)
-          remap("n", "<leader>hd", rt.inlay_hints.disable, opts)
-        end,
-      })
-
-      lsp.skip_server_setup({ "rust_analyzer" })
-      lsp.skip_server_setup({ "elixir_ls", "elixirls" }) -- We're setting the new `nextls` server below
-
-      lsp.setup()
-
-      local js_formatters = { "eslint", "prettier" }
-      require("conform").setup({
-        format_on_save = {
-          timeout = 500,
-          lsp_fallback = true,
-        },
-        formatters_by_ft = {
-          lua = { "stylua" },
-          toml = { "taplo" },
-          ruby = { "rubocop" },
-
-          vue = js_formatters,
-          svelte = js_formatters,
-          javascript = js_formatters,
-          javascriptreact = js_formatters,
-          typescript = js_formatters,
-          typescriptreact = js_formatters,
-
-          -- This will run in all files
-          ["*"] = { "trim_whitespace" },
-        },
-      })
-
-      local lint = require("lint")
-      lint.linters_by_ft = {
-        vue = { "eslint" },
-        svelte = { "eslint" },
-        javascript = { "eslint" },
-        javascriptreact = { "eslint" },
-        typescript = { "eslint" },
-        typescriptreact = { "eslint" },
-
-        ruby = { "rubocop" },
-      }
-
-      local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
-      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave", "TextChanged" }, {
-        group = lint_augroup,
-        callback = function()
-          lint.try_lint()
-        end,
-      })
 
       -- We need to move this after the `lsp.setup()` otherwise it won't work
       require("bjufre.lsp.elixir").setup(on_attach)
-
       -- Configure Fuzzy LS Ruby server
       require("bjufre.lsp.ruby").setup(on_attach)
-
-      require("rust-tools").setup({
-        server = rust_lsp,
-        tools = {
-          inlay_hints = {
-            auto = false,
-          },
-        },
-      })
 
       vim.diagnostic.config({
         virtual_text = true,

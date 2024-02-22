@@ -1,4 +1,5 @@
 ; extends
+
 ; HTML string blocks
 ((comment) @_comment
   .

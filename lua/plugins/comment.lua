@@ -1,18 +1,15 @@
 return {
   {
-    'JoosepAlviste/nvim-ts-context-commentstring',
-  },
-  {
-    'numToStr/Comment.nvim',
+    "numToStr/Comment.nvim",
     dependencies = {
-      'JoosepAlviste/nvim-ts-context-commentstring',
+      "JoosepAlviste/nvim-ts-context-commentstring",
     },
     config = function()
-      require('Comment').setup({
+      require("Comment").setup({
         -- pre_hook = function()
         --   return require('ts_context_commentstring.internal').calculate_commentstring()
         -- end,
-        pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+        pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
         post_hook = nil,
 
         ---Add a space b/w comment and the line
@@ -43,11 +40,11 @@ return {
         ---@type table
         extra = {
           ---Add comment on the line above
-          above = '<leader>cO',
+          above = "<leader>cO",
           ---Add comment on the line below
-          below = '<leader>co',
+          below = "<leader>co",
           ---Add comment at the end of line
-          eol = '<leader>ca',
+          eol = "<leader>ca",
         },
 
         ---LHS of line and block comment toggle mapping in NORMAL/VISUAL mode
@@ -68,6 +65,6 @@ return {
           block = "<leader>b",
         },
       })
-    end
-  }
+    end,
+  },
 }

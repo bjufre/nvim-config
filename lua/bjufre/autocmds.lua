@@ -57,9 +57,3 @@ autocmd({ "BufEnter", "BufRead", "BufNewFile" }, {
   pattern = "*.kdl",
   command = [[set syntax=kdl]],
 })
-
--- Make sure that we have all the folds open when entering a file
--- autocmd({ "BufReadPost", "FileReadPost" }, {
---   pattern = "*",
---   command = [[normal zR]],
--- })

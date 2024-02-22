@@ -1,6 +1,6 @@
 return {
-  'stevearc/dressing.nvim',
-  enabled = true,
+  "stevearc/dressing.nvim",
+  enabled = false,
   opts = {
     input = {
       -- Set to false to disable the vim.ui.input implementation
@@ -164,5 +164,5 @@ return {
       -- see :help dressing_get_config
       get_config = nil,
     },
-  }
+  },
 }

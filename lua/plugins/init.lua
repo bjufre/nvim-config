@@ -4,24 +4,17 @@ return {
   "kyazdani42/nvim-web-devicons",
 
   -- Colorscheme
-  "folke/tokyonight.nvim",
-  { "projekt0n/github-nvim-theme", enabled = false },
-  { "catppuccin/nvim", name = "catppuccin", enabled = true },
+  { "folke/tokyonight.nvim", enabled = true },
   { "rose-pine/neovim", name = "rose-pine", enabled = true },
-  "rebelot/kanagawa.nvim",
-  { "olivercederborg/poimandres.nvim", enabled = false },
-  {
-    "neanias/everforest-nvim",
-    version = false,
-    lazy = false,
-    priority = 1000, -- make sure to load this before all the other start plugins
-  },
-  { "shaunsingh/nord.nvim" },
+  { "catppuccin/nvim", name = "catppuccin", enabled = true },
+  { "projekt0n/github-nvim-theme", enabled = true },
+  { "gbprod/nord.nvim", name = "nord", enabled = true },
 
   "moll/vim-bbye", -- Better buffer delete and wipeout,
 
+  "norcalli/nvim-colorizer.lua",
   { "tpope/vim-sleuth", enabled = true },
-  "tpope/vim-abolish",
+  { "tpope/vim-abolish", enabled = true },
   "gpanders/editorconfig.nvim",
   {
     "kylechui/nvim-surround",
@@ -29,21 +22,12 @@ return {
   },
   {
     "junegunn/vim-easy-align",
+    enabled = false,
     keys = {
       {
         "<leader>ea",
         ":EasyAlign*<Bar><Enter>",
       },
-    },
-  },
-
-  -- Github
-  { "github/copilot.vim", enabled = false },
-  {
-    "kdheepak/lazygit.nvim",
-    keys = {
-      { "<leader>gg", "<cmd>LazyGit<CR>" },
-      { "<leader>gf", "<cmd>!git fetch --all<CR>" },
     },
   },
 }

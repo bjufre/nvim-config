@@ -3,8 +3,7 @@
 -- or go here and upload the font file: https://mathew-kurian.github.io/CharacterMap/
 -- find more here: https://www.nerdfonts.com/cheat-sheet
 vim.g.use_nerd_icons = false
-if vim.fn.has "mac" == 1 and vim.g.use_nerd_icons then
-  -- elseif vim.fn.has "mac" == 1 then
+if vim.fn.has("mac") == 1 and vim.g.use_nerd_icons then
   return {
     kind = {
       Text = "",
@@ -64,6 +63,14 @@ if vim.fn.has "mac" == 1 and vim.g.use_nerd_icons then
       Octoface = "",
     },
     ui = {
+      ArrowCircleDown = "",
+      ArrowCircleLeft = "",
+      ArrowCircleRight = "",
+      ArrowCircleUp = "",
+      BoldArrowDown = "",
+      BoldArrowLeft = "",
+      BoldArrowRight = "",
+      BoldArrowUp = "",
       ArrowClosed = "",
       ArrowOpen = "",
       Lock = "",
@@ -169,6 +176,14 @@ else
       Octoface = " ",
     },
     ui = {
+      ArrowCircleDown = "",
+      ArrowCircleLeft = "",
+      ArrowCircleRight = "",
+      ArrowCircleUp = "",
+      BoldArrowDown = "",
+      BoldArrowLeft = "",
+      BoldArrowRight = "",
+      BoldArrowUp = "",
       ArrowClosed = "",
       ArrowOpen = "",
       Lock = " ",

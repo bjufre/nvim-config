@@ -65,10 +65,10 @@ function M.register_defaults()
   M.remap("n", "<S-Right>", ":vertical resize +2<CR>")
   M.remap("n", "<leader>=", "<C-w>=") -- reset panes
 
-  -- Folds
-  M.remap("n", "fo", "zo")
-  M.remap("n", "fc", "zc")
-  M.remap("n", "fO", "zR")
+  -- Folds (CHANGED IN LSP)
+  -- M.remap("n", "fo", "zo")
+  -- M.remap("n", "fc", "zc")
+  -- M.remap("n", "fO", "zR")
 
   ------------------------------
   -- Visual Mode

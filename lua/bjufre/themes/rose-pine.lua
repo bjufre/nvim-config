@@ -1,12 +1,12 @@
-local palette = require("rose-pine.palette")
-
 local DISABLE_ITALICS = true
+
+local palette = require("rose-pine.palette")
 
 require("rose-pine").setup({
   --- @usage 'auto'|'main'|'moon'|'dawn'
   variant = "moon",
   --- @usage 'main'|'moon'|'dawn'
-  dark_variant = "main",
+  dark_variant = "moon",
   bold_vert_split = false,
   dim_nc_background = false,
   disable_background = false,
@@ -44,6 +44,14 @@ require("rose-pine").setup({
   -- Change specific vim highlight groups
   -- https://github.com/rose-pine/neovim/wiki/Recipes
   highlight_groups = {
+    Italic = { italic = true },
+    Comment = { italic = true },
+    Keyword = { italic = false },
+    Function = { italic = false },
+    Variable = { italic = false },
+    String = { italic = true },
+    ["@string"] = { italic = true },
+
     -- This fixes a few issues, specially with Elixir atoms
     Identifier = { fg = palette.iris },
 
@@ -51,7 +59,28 @@ require("rose-pine").setup({
     ColorColumn = { bg = palette.foam, blend = 10 },
     CursorLine = { bg = palette.foam, blend = 10 },
     StatusLine = { fg = palette.love, bg = "love", blend = 10 },
+
+    -- Whitespace
+    NonText = { fg = palette.highlight_high },
+    IblIndent = { fg = palette.highlight_high },
+    IblScope = { fg = palette.muted },
+
+    -- Cursor
+    Cursor = { fg = palette.base, bg = palette.pine },
+    nCursor = { fg = palette.base, bg = palette.pine },
+    iCursor = { fg = palette.base, bg = palette.love },
   },
+  before_highlight = function(group, highlight, palette)
+    -- Disable all undercurls
+    -- if highlight.undercurl then
+    --     highlight.undercurl = false
+    -- end
+    --
+    -- Change palette colour
+    -- if highlight.fg == palette.pine then
+    --     highlight.fg = palette.foam
+    -- end
+  end,
 })
 
 -- Set colorscheme after options

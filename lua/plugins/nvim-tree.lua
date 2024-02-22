@@ -1,5 +1,6 @@
 return {
   "nvim-tree/nvim-tree.lua",
+  enabled = false,
   dependencies = {
     "kyazdani42/nvim-web-devicons",
   },
@@ -22,11 +23,14 @@ return {
 
     require("nvim-tree").setup({
       view = {
-        side = "right",
+        side = "left",
         width = {
           min = 30,
           max = -1, -- unbounded
         },
+      },
+      notify = {
+        threshold = vim.log.levels.DEBUG,
       },
       on_attach = function(bufnr)
         local function opts(desc)
@@ -79,8 +83,8 @@ return {
         vim.keymap.set("n", "q", api.tree.close, opts("Close"))
         vim.keymap.set("n", "r", api.fs.rename, opts("Rename"))
         vim.keymap.set("n", "R", api.tree.reload, opts("Refresh"))
-        -- vim.keymap.set("n", "s", api.node.run.system, opts("Run System"))
-        vim.keymap.set("n", "S", api.tree.search_node, opts("Search"))
+        vim.keymap.set("n", "S", api.node.run.system, opts("Run System"))
+        vim.keymap.set("n", "/", api.tree.search_node, opts("Search"))
         vim.keymap.set("n", "u", api.fs.rename_full, opts("Rename: Full Path"))
         vim.keymap.set("n", "U", api.tree.toggle_custom_filter, opts("Toggle Filter: Hidden"))
         vim.keymap.set("n", "W", api.tree.collapse_all, opts("Collapse"))
@@ -98,8 +102,4 @@ return {
       end,
     })
   end,
-  keys = {
-    { "<leader>ee", ":NvimTreeToggle<CR>" },
-    { "<leader>ef", ":NvimTreeFindFile<CR>" },
-  },
 }

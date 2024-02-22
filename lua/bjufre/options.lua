@@ -22,20 +22,29 @@ opt.scrolloff = 99999 -- Make sure that we're always centered horizontally on th
 opt.cursorline = true -- Highlight the current line
 opt.numberwidth = 4 -- Leave some space for the numbers column (gutter)
 opt.signcolumn = "yes" -- fixes most of the problematic issues with diagnostics to avoid shifting the character grid and get dizzy
+opt.list = true
+-- opt.listchars = "eol:↵,trail:~"
+-- opt.listchars = "eol:↲,trail:·,tab:» ,nbsp:␣"
+-- opt.listchars = "eol:↲,trail:·,tab:› ,nbsp:␣"
+opt.listchars = "eol:↲,trail:·,tab:  ,nbsp:␣"
+-- opt.listchars = "eol:↴,trail:~"
 -- opt.colorcolumn = '80'
 opt.colorcolumn = "120"
-opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20"
+
+-- opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20"
 -- BLOCK ALWAYS
--- opt.guicursor = 'n-v-c:block-blinkwait700-blinkoff400-blinkon250,i-ci-ve:block,r-cr:hor20,o:hor50,sm:block-blinkwait175-blinkoff150-blinkon175'
+-- opt.guicursor =
+--   "n-v-c:block-blinkwait700-blinkoff400-blinkon250,i-ci-ve:block,r-cr:hor20,o:hor50,sm:block-blinkwait175-blinkoff150-blinkon175"
 
 -- BLOCK ALWAYS (with different colors based on mode)
-vim.cmd([[highlight nCursor guifg=white guibg=cyan]])
-vim.cmd([[highlight iCursor guifg=None guibg=magenta]])
+-- The colors are set in the `autocmds.lua` file.
 -- opt.guicursor =
--- 'n-v-c:block-nCursor-blinkwait700-blinkoff400-blinkon250,i-ci-ve:block-iCursor,r-cr:hor20,o:hor50,sm:block-blinkwait175-blinkoff150-blinkon175'
+-- "n-v-c:block-nCursor-blinkwait700-blinkoff400-blinkon250,i-ci-ve:block-iCursor,r-cr:hor20,o:hor50,sm:block-blinkwait175-blinkoff150-blinkon175"
 
 -- BLOCK & THIN
--- opt.guicursor = 'n-v-c:block-nCursor-blinkwait700-blinkoff400-blinkon250,i-ci-ve:ver50-iCursor,r-cr:hor20,o:hor50,sm:block-blinkwait175-blinkoff150-blinkon175'
+opt.guicursor =
+  -- "n-v-c:block-nCursor-blinkwait700-blinkoff400-blinkon250,i-ci-ve:ver50-iCursor,r-cr:hor20,o:hor50,sm:block-blinkwait175-blinkoff150-blinkon175"
+  "n-v-c:block-nCursor,i-ci-ve:ver50-iCursor,r-cr:hor20,o:hor50,sm:" -- No blinking
 
 opt.backup = false
 opt.swapfile = false -- Leaving on the edge
