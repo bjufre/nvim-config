@@ -1,27 +1,3 @@
-local on_attach = function(client, bufnr)
-  vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
-
-  local remap = vim.keymap.set
-  local opts = { buffer = bufnr, noremap = true, silent = true }
-
-  -- Mappings
-  -- See `:h vim.lsp.*` for documentation on any of the following functions
-  remap("n", "vgd", "<CMD>vsplit | lua vim.lsp.buf.definition()<CR>", opts)
-  remap("n", "vgD", "<CMD>vsplit | lua vim.lsp.buf.declaration()<CR>", opts)
-  remap("n", "gd", vim.lsp.buf.definition, opts)
-  remap("n", "gD", vim.lsp.buf.declaration, opts)
-  remap("n", "<leader>k", vim.lsp.buf.hover, opts)
-  remap("n", "<leader>a", vim.lsp.buf.code_action, opts)
-  remap("n", "gi", vim.lsp.buf.implementation, opts)
-  -- remap('n', 'go', function() vim.lsp.buf.type_definition() end, opts)
-  remap("n", "gr", vim.lsp.buf.references, opts)
-  remap("n", "rn", vim.lsp.buf.rename, opts)
-  remap("n", "gpd", vim.diagnostic.goto_prev, opts)
-  remap("n", "gnd", vim.diagnostic.goto_next, opts)
-  remap({ "i", "n" }, "<C-k>", vim.lsp.buf.signature_help, opts)
-  remap("n", "<leader>-", vim.lsp.buf.format, opts)
-end
-
 return {
   {
     -- Needs to happen first in order to make sure that the hook is set for `sumneko_lua`
@@ -53,29 +29,34 @@ return {
     end,
   },
   {
-    "VonHeikemen/lsp-zero.nvim",
+    "neovim/nvim-lspconfig",
     dependencies = {
       -- LSP Support
-      { "neovim/nvim-lspconfig" },
       { "williamboman/mason.nvim" },
       { "WhoIsSethDaniel/mason-tool-installer.nvim" },
       { "williamboman/mason-lspconfig.nvim" },
 
+      -- Needed so that we can use the amazing power of Telescope for the `on_attach`
+      "nvim-telescope/telescope.nvim",
+
       -- KDL (Zellij config mainly)
-      { "imsnif/kdl.vim" },
+      {
+        "imsnif/kdl.vim",
+        enabled = false,
+      },
 
       -- Custom
       -- TODO: Figure out why this errors everytime we start NVIM
       -- { "sheerun/vim-polyglot" },
 
-      -- { "simrat39/rust-tools.nvim" },
       {
         "elixir-tools/elixir-tools.nvim",
+        enabled = true,
         dependencies = { "nvim-lua/plenary.nvim" },
       },
       {
         "amadeus/vim-mjml",
-        enabled = true,
+        enabled = false,
         filetypes = { "mjml" },
       },
       {
@@ -86,41 +67,6 @@ return {
         end,
       },
 
-      -- Symbols Outline
-      {
-        "simrat39/symbols-outline.nvim",
-        enabled = false,
-        opts = {
-          auto_close = false,
-          show_symbol_details = false,
-          keymaps = { -- These keymaps can be a string or a table for multiple keys
-            close = { "<Esc>" },
-            goto_location = "<Cr>",
-            focus_location = "o",
-            hover_symbol = "<C-space>",
-            toggle_preview = "K",
-            rename_symbol = "r",
-            code_actions = "a",
-            fold = "h",
-            unfold = "l",
-            fold_all = "W",
-            unfold_all = "E",
-            fold_reset = "R",
-          },
-        },
-        keys = {
-          { "<leader>so", ":SymbolsOutline<CR>" },
-        },
-      },
-
-      -- Folding
-      {
-        "kevinhwang91/nvim-ufo",
-        dependencies = { "kevinhwang91/promise-async" },
-        config = function()
-          require('bjufre.ufo').setup()
-        end,
-      },
       {
         "luukvbaal/statuscol.nvim",
         config = function()
@@ -140,15 +86,6 @@ return {
       -- Ruby/Rails
       "slim-template/vim-slim",
 
-      -- Autocompletion
-      { "hrsh7th/nvim-cmp" },
-      { "hrsh7th/cmp-buffer" },
-      { "hrsh7th/cmp-path" },
-      { "saadparwaiz1/cmp_luasnip" },
-      { "hrsh7th/cmp-nvim-lsp" },
-      { "hrsh7th/cmp-nvim-lua" },
-      { "hrsh7th/cmp-nvim-lsp-signature-help" },
-
       -- Snippets
       {
         "L3MON4D3/LuaSnip",
@@ -161,194 +98,228 @@ return {
       },
     },
     config = function()
-      local lsp = require("lsp-zero")
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = vim.api.nvim_create_augroup("bj-lsp-attach", { clear = true }),
+        callback = function(event)
+          local map = function(keys, func, desc)
+            vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
+          end
 
-      lsp.set_server_config({
-        capabilities = {
-          textDocument = {
-            foldingRange = {
-              dynamicRegistration = false,
-              lineFoldingOnly = true,
-            }
-          }
-        },
-        handlers = {
-          ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" }),
-          ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" }),
-        },
-      })
+          -- Jump to the definition of the word under your cursor.
+          --  This is where a variable was first declared, or where a function is defined, etc.
+          --  To jump back, press <C-T>.
+          map("gd", require("telescope.builtin").lsp_definitions, "[G]o to [D]efinition")
+          -- Find references for the word under your cursor.
+          map("gr", require("telescope.builtin").lsp_references, "[G]o to [R]eferences")
+          -- Jump to the implementation of the word under your cursor.
+          --  Useful when your language has ways of declaring types without an actual implementation.
+          map("gI", require("telescope.builtin").lsp_implementations, "[G]o to [I]mplementation")
+          -- Jump to the type of the word under your cursor.
+          --  Useful when you're not sure what type a variable is and you want to see
+          --  the definition of its *type*, not where it was *defined*.
+          map("<leader>T", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
+          -- Fuzzy find all the symbols in your current document.
+          --  Symbols are things like variables, functions, types, etc.
+          map("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
+          -- Fuzzy find all the symbols in your current workspace
+          --  Similar to document symbols, except searches over your whole project.
+          map("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[W]orkspace [S]ymbols")
+          -- Rename the variable under your cursor
+          --  Most Language Servers support renaming across files, etc.
+          map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+          -- Execute a code action, usually your cursor needs to be on top of an error
+          -- or a suggestion from your LSP for this to activate.
+          map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
+          -- Opens a popup that displays documentation about the word under your cursor
+          --  See `:help K` for why this keymap
+          map("K", vim.lsp.buf.hover, "Hover Documentation")
+          -- WARN: This is not Goto Definition, this is Goto Declaration.
+          --  For example, in C this would take you to the header
+          map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
-      lsp.on_attach(on_attach)
+          -- CUSTOM restart function
+          map("<leader>lr", require("bjufre.lsp.restart"), "[R]estart")
 
-      require("mason").setup({})
-      require("mason-lspconfig").setup({
-        ensure_installed = {
-          "html",
-          -- "htmx",
-          "cssls",
-          "dockerls",
-          -- FIXME: Issue with `Noice` where the buffer is overwritten with error log
-          "rubocop",
-          "solargraph",
-          "tailwindcss",
-          "sqlls",
-          "taplo",
-          "vuels",
-          "tsserver",
-          "eslint",
-          "prettier",
-          "lua_ls",
-          -- "rust_analyzer",
-          "gopls",
-          "nextls",
-          "elixirls",
-        },
-        handlers = {
-          lsp.default_setup,
-          lua_ls = function()
-            require("lspconfig").lua_ls.setup(vim.tbl_deep_extend("force", lsp.nvim_lua_ls(), {
-              settings = {
-                Lua = {
-                  hint = {
-                    enable = true,
-                  },
-                },
-              },
-            }))
-          end,
-          html = function()
-            require("lspconfig").html.setup({
-              filetypes = { "html", "erb", "eruby", "eelixir", "html", "liquid", "heex", "css" },
-              settings = {},
-              init_options = {
-                embeddedLanguages = { css = true, javascript = true },
-                configurationSection = { "html", "css", "javascript" },
-              },
+          -- The following two autocommands are used to highlight references of the
+          -- word under your cursor when your cursor rests there for a little while.
+          --    See `:help CursorHold` for information about when this is executed
+          --
+          -- When you move your cursor, the highlights will be cleared (the second autocommand).
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+          if client and client.server_capabilities.documentHighlightProvider then
+            vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+              buffer = event.buf,
+              callback = vim.lsp.buf.document_highlight,
             })
-          end,
-          cssls = function()
-            require("lspconfig").cssls.setup({
-              settings = {
-                css = {
-                  lint = {
-                    unknownAtRules = "ignore",
-                  },
-                },
-              },
-            })
-          end,
-          tailwindcss = function()
-            require("lspconfig").tailwindcss.setup({
-              init_options = {
-                userLanguages = {
-                  elixir = "phoenix-heex",
-                  eruby = "erb",
-                  heex = "phoenix-heex",
-                },
-              },
-              settings = {
-                tailwindCSS = {
-                  experimental = {
-                    classRegex = {
-                      [[class: "([^"]*)]],
-                    },
-                  },
-                },
-              },
-              filetypes = { "erb", "eruby", "elixir", "eelixir", "html", "liquid", "heex", "css", "slim", "haml" },
+
+            vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+              buffer = event.buf,
+              callback = vim.lsp.buf.clear_references,
             })
           end
-        }
+        end,
       })
 
-      vim.opt.completeopt = { "menu", "menuone", "noselect" }
-
-      local cmp = require("cmp")
-      local cmp_select = { behavior = cmp.SelectBehavior.Select }
-      local cmp_action = require("lsp-zero").cmp_action()
-
-      cmp.setup({
-        snippet = {
-          expand = function(args)
-            require("luasnip").lsp_expand(args.body)
-          end,
-        },
-        mapping = cmp.mapping.preset.insert({
-          ["<C-k>"] = cmp.mapping.select_prev_item(cmp_select),
-          ["<C-j>"] = cmp.mapping.select_next_item(cmp_select),
-          ["<CR>"] = cmp.mapping.confirm({
-            select = true,
-            behavior = cmp.ConfirmBehavior.Replace,
-          }),
-          -- FIXME: Scrolling docs doesn't work
-          ["<C-u>"] = cmp.mapping.scroll_docs(-4),
-          ["<C-d>"] = cmp.mapping.scroll_docs(4),
-          ["<C-Space>"] = cmp.mapping.complete({
-            select = true,
-            behavior = cmp.ConfirmBehavior.Replace,
-          }),
-          ["<C-e>"] = cmp.mapping.close(),
-          ["<Tab>"] = cmp_action.tab_complete(),
-          ["<S-Tab>"] = cmp_action.select_prev_or_fallback(),
-        }),
-        sources = {
-          {
-            name = "nvim_lsp",
-            entry_filter = function(entry, ctx)
-              return require("cmp").lsp.CompletionItemKind.Snippet ~= entry:get_kind()
-            end,
+      -- LSP servers and clients are able to communicate to each other what features they support.
+      --  By default, Neovim doesn't support everything that is in the LSP Specification.
+      --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
+      --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities(), {
+        textDocument = {
+          foldingRange = {
+            dynamicRegistration = false,
+            lineFoldingOnly = true,
           },
-          -- { name = "nvim_lsp_signature_help" }, -- This will help show the popup for the signature docs
-          -- { name = "luasnip" }, -- Disable snippets...
-          { name = "path" },
-          { name = "buffer", keyword_length = 5 }, -- Wait at least until I've written 5 characters to show buffer sugg.
         },
-        -- formatting = lsp.cmp_format(),
-        formatting = {
-          fields = { "abbr", "kind", "menu" },
-          format = function(entry, vim_item)
-            local icons = require("bjufre.icons").kind
-            -- Kind icons
-            vim_item.kind = string.format("%s %s", icons[vim_item.kind], vim_item.kind)
-            -- Source
-            local remove_source = false
-            -- NOTE: Order matters
-            local sources_menu = {
-              nvim_lsp = "[LSP]",
-              nvim_lua = "[Lua]",
-              -- luasnip = "[LuaSnip]",
-              buffer = "[Buffer]",
-              path = "[Path]",
-            }
+      })
 
-            if remove_source then
-              for key in pairs(sources_menu) do
-                sources_menu[key] = ""
-              end
-            end
+      local servers = {
+        lua_ls = {
+          -- cmd = {...},
+          -- filetypes { ...},
+          -- capabilities = {},
+          settings = {
+            Lua = {
+              runtime = { version = "LuaJIT" },
+              workspace = {
+                checkThirdParty = false,
+                -- Tells lua_ls where to find all the Lua files that you have loaded
+                -- for your neovim configuration.
+                library = {
+                  "${3rd}/luv/library",
+                  unpack(vim.api.nvim_get_runtime_file("", true)),
+                },
+                -- If lua_ls is really slow on your computer, you can try this instead:
+                -- library = { vim.env.VIMRUNTIME },
+              },
+              completion = {
+                callSnippet = "Replace",
+              },
+              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+              -- diagnostics = { disable = { 'missing-fields' } },
+            },
+          },
+        },
+        html = {
+          filetypes = { "html", "erb", "eruby", "eelixir", "html", "liquid", "heex", "css" },
+          settings = {},
+          init_options = {
+            embeddedLanguages = { css = true, javascript = true },
+            configurationSection = { "html", "css", "javascript" },
+          },
+        },
+        cssls = {
+          settings = {
+            css = {
+              lint = {
+                unknownAtRules = "ignore",
+              },
+            },
+          },
+        },
+        tailwindcss = {
+          init_options = {
+            userLanguages = {
+              elixir = "phoenix-heex",
+              eruby = "erb",
+              heex = "phoenix-heex",
+            },
+          },
+          settings = {
+            tailwindCSS = {
+              experimental = {
+                classRegex = {
+                  [[class: "([^"]*)]],
+                },
+              },
+            },
+          },
+          filetypes = { "erb", "eruby", "elixir", "eelixir", "html", "liquid", "heex", "css", "slim", "haml" },
+        },
+      }
 
-            vim_item.menu = sources_menu[entry.source.name]
+      local ensure_installed = vim.tbl_keys(servers)
 
-            -- TODO: Add Tailwind colors CMP support
+      vim.list_extend(ensure_installed, {
+        "intelephense",
+        "dockerls",
+        "solargraph",
+        "sqlls",
+        "taplo",
+        "vuels",
+        "tsserver",
+        "rubocop",
+        "eslint",
+        "prettier",
+        "gopls",
+        "nextls",
+        -- "elixirls",
+        "stylua",
+      })
 
-            return vim_item
+      require("mason").setup({
+        ui = {
+          icons = {
+            package_installed = "✓",
+            package_pending = "➜",
+            package_uninstalled = "✗",
+          },
+        },
+      })
+      require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+      require("mason-lspconfig").setup({
+        handlers = {
+          function(server_name)
+            local server = servers[server_name] or {}
+
+            server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+            require("lspconfig")[server_name].setup(server)
           end,
         },
-        window = {
-          completion = cmp.config.window.bordered(),
-          documentation = cmp.config.window.bordered(),
-        },
       })
 
+      local lspconfig = require("lspconfig")
+      local configs = require("lspconfig.configs")
 
-      -- We need to move this after the `lsp.setup()` otherwise it won't work
-      require("bjufre.lsp.elixir").setup(on_attach)
-      -- Configure Fuzzy LS Ruby server
-      require("bjufre.lsp.ruby").setup(on_attach)
+      -- Gleam
+      if not configs.gleam then
+        configs.gleam = {
+          default_config = {
+            -- cmd = { "gleam", "lsp" },
+            cmd = { "glas", "--stdio" },
+            name = "gleam",
+            filetypes = { "gleam" },
+            root_dir = require("lspconfig.util").root_pattern("gleam.toml", ".git"),
+          },
+        }
+      end
+      configs.gleam.setup({})
 
-      vim.diagnostic.config({
-        virtual_text = true,
-      })
+      -- Elixir
+      require("bjufre.lsp.elixir").setup()
+
+      -- Ruby
+      if not configs.fuzzy_ls then
+        configs.fuzzy_ls = {
+          default_config = {
+            cmd = { "/Users/bj/fuzzy_ruby_server/target/release/fuzzy" },
+            filetypes = { "ruby" },
+            root_dir = function(fname)
+              return lspconfig.util.find_git_ancestor(fname)
+            end,
+            settings = {},
+            init_options = {
+              allocationType = "ram",
+              indexGems = true,
+              reportDiagnostics = true,
+            },
+          },
+        }
+      end
+      lspconfig.fuzzy_ls.setup({})
+
+      vim.diagnostic.config({ virtual_text = true })
     end,
   },
 }

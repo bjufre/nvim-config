@@ -60,5 +60,10 @@ return {
     local telescope = require("telescope")
 
     telescope.register_extension("git_worktree")
+
+    local map = require("bjufre.keymaps").remap
+
+    map("n", "<leader>gwl", telescope.extensions.git_worktree.git_worktrees, { desc = "[G]it [W]orktree [L]ist" })
+    map("n", "<leader>gwa", require("bjufre.worktree.create_worktree"), { desc = "[G]it [W]orktree [A]dd" })
   end,
 }

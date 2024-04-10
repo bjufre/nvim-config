@@ -1,5 +1,4 @@
 -- Globals
-require("bjufre.globals")
 require("bjufre.options")
 require("bjufre.autocmds")
 

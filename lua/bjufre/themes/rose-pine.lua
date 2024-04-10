@@ -49,8 +49,8 @@ require("rose-pine").setup({
     Keyword = { italic = false },
     Function = { italic = false },
     Variable = { italic = false },
-    String = { italic = true },
-    ["@string"] = { italic = true },
+    String = { italic = false },
+    ["@string"] = { italic = false },
 
     -- This fixes a few issues, specially with Elixir atoms
     Identifier = { fg = palette.iris },

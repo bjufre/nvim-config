@@ -1,8 +1,5 @@
 return {
   "folke/trouble.nvim",
-  cmd = { "TroubleToggle", "Trouble" },
-  opts = { use_diagnostic_signs = true },
-  lazy = true,
   config = function()
     require("trouble").setup({
       -- "workspace_diagnostics", "document_diagnostics", "quickfix", "lsp_references", "loclist"

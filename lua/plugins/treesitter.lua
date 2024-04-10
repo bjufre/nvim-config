@@ -6,6 +6,7 @@ return {
       "yioneko/nvim-yati",
       "JoosepAlviste/nvim-ts-context-commentstring",
       "nvim-treesitter/nvim-treesitter-context",
+      "nvim-treesitter/nvim-treesitter-textobjects",
       "windwp/nvim-ts-autotag",
       "RRethy/nvim-treesitter-endwise",
       "nvim-treesitter/playground",
@@ -24,6 +25,8 @@ return {
 
       vim.g.skip_ts_context_commentstring_module = true
 
+      -- We've added a fix for the Ruby indentation in the `autocmds.lua` file.
+
       require("nvim-treesitter.configs").setup({
         -- A list of parser names, or "all"
         ensure_installed = {
@@ -40,6 +43,7 @@ return {
           "eex",
           "heex",
           "elixir",
+          "gleam",
           -- 'eelixir',
           "gitignore",
           "javascript",
@@ -72,7 +76,19 @@ return {
         },
         indent = {
           enable = true,
-          disable = { "rust", "vue", "javascript", "typescript", "javascriptreact", "typescriptreact" },
+          disable = {
+            "vue",
+            "javascript",
+            "typescript",
+            "javascriptreact",
+            "typescriptreact",
+
+            "rust",
+
+            -- "elixir",
+            -- "eelixir",
+            -- "heex",
+          },
         },
         yati = {
           enable = true,
@@ -94,6 +110,9 @@ return {
         },
         autotag = {
           enable = true,
+          enable_rename = true,
+          enable_close = true,
+          enable_on_slash = true,
           filetypes = {
             "html",
             "javascript",

@@ -46,6 +46,9 @@ opt.guicursor =
   -- "n-v-c:block-nCursor-blinkwait700-blinkoff400-blinkon250,i-ci-ve:ver50-iCursor,r-cr:hor20,o:hor50,sm:block-blinkwait175-blinkoff150-blinkon175"
   "n-v-c:block-nCursor,i-ci-ve:ver50-iCursor,r-cr:hor20,o:hor50,sm:" -- No blinking
 
+-- BLOCK & UNDER
+-- opt.guicursor = "n-v-c:block-nCursor,i-ci-ve:hor20-iCursor,r-cr:hor20,o:hor50,sm:" -- No blinking
+
 opt.backup = false
 opt.swapfile = false -- Leaving on the edge
 -- opt.undodir = os.getenv('HOME') .. './.vim/undodir'
@@ -82,7 +85,3 @@ opt.list = true
 -- Netrw options
 vim.g.netrw_keepdir = 0
 vim.g.netrw_banner = 1
-
-vim.g.netrw_localcopydircmd = "cp -r"
-vim.cmd([[hi! link netrwMarkFile Search]])
-vim.g.netrw_bufsettings = "noma nomod nu nobl nowrap ro"

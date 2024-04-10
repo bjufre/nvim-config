@@ -4,39 +4,50 @@ return {
   -- Use the defaults for now.
   -- Check this for more detailed information about those:
   -- https://github.com/nvim-pack/nvim-spectre#customize
-  opts = {
-    find_engine = {
-      ["rg"] = {
-        cmd = "rg",
-        -- default args
-        args = {
-          "--color=never",
-          "--no-heading",
-          "--with-filename",
-          "--line-number",
-          "--column",
-        },
-        options = {
-          ["ignore-case"] = {
-            value = "--ignore-case",
-            icon = "[I]",
-            desc = "Ignore case",
+  config = function()
+    require("spectre").setup({
+      find_engine = {
+        ["rg"] = {
+          cmd = "rg",
+          -- default args
+          args = {
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
           },
-          ["hidden"] = {
-            value = "--hidden",
-            icon = "[H]",
-            desc = "Hidden file",
+          options = {
+            ["ignore-case"] = {
+              value = "--ignore-case",
+              icon = "[I]",
+              desc = "Ignore case",
+            },
+            ["hidden"] = {
+              value = "--hidden",
+              icon = "[H]",
+              desc = "Hidden file",
+            },
           },
         },
       },
-    },
-    default = {
-      find = {
-        cmd = "rg",
-        options = { "hidden" },
+      default = {
+        find = {
+          cmd = "rg",
+          options = { "hidden" },
+        },
       },
-    },
-  },
+    })
+
+    local map = require("bjufre.keymaps").remap
+    local spectre = require("spectre")
+
+    map("n", "<leader>sr", spectre.open, { desc = "[S]earch & [R]eplace" })
+    map("n", "<leader>sw", function()
+      spectre.open_visual({ select_word = true })
+    end, { desc = "[S]earch & Replace [W]ord" })
+    map("n", "<leader>sb", spectre.open_file_search, { desc = "[S]earch & Replace in [B]uffer" })
+  end,
   -- keys = {
   --   {
   --     "<leader>se",

@@ -13,8 +13,8 @@ require("nord").setup({
     -- Style to be applied to different syntax groups
     -- Value is any valid attr-list value for `:help nvim_set_hl`
     comments = { italic = true },
-    keywords = { italic = true },
-    functions = { italic = true },
+    keywords = { italic = false },
+    functions = { italic = false },
     variables = { italic = false },
 
     -- To customize lualine/bufferline

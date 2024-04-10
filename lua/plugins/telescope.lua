@@ -2,10 +2,10 @@ return {
   -- Telescope
   {
     "nvim-telescope/telescope.nvim",
-    cmd = "Telescope",
-    version = false,
-    lazy = true,
+    event = "VimEnter",
     dependencies = {
+      "folke/trouble.nvim",
+
       "nvim-lua/plenary.nvim",
       "nvim-telescope/telescope-file-browser.nvim",
       "nvim-telescope/telescope-ui-select.nvim",
@@ -19,7 +19,7 @@ return {
     config = function()
       local telescope = require("telescope")
       local actions = require("telescope.actions")
-      local trouble = require("trouble")
+      local trouble = require("trouble.providers.telescope")
       local icons = require("bjufre.icons")
       local lga_actions = require("telescope-live-grep-args.actions")
 
@@ -42,16 +42,14 @@ return {
         return string.format("%s\t\t%s", tail, parent)
       end
 
+      local mappings = {
+        i = { ["<C-t>"] = trouble.open_with_trouble },
+        n = { ["<C-t>"] = trouble.open_with_trouble },
+      }
+
       telescope.setup({
         defaults = {
-          mappings = {
-            i = {
-              -- ["<esc>"] = actions.close,
-              ["<C-t>"] = trouble.open_with_trouble,
-            },
-
-            n = { ["<C-t>"] = trouble.open_with_trouble },
-          },
+          mappings = mappings,
           previewer = false,
           prompt_prefix = " " .. icons.ui.Telescope .. " ",
           selection_caret = icons.ui.BoldArrowRight .. " ",
@@ -98,6 +96,7 @@ return {
             },
           },
           buffers = {
+            previewer = false,
             path_display = formattedName,
             mappings = {
               i = {
@@ -107,7 +106,6 @@ return {
                 ["<c-d>"] = actions.delete_buffer,
               },
             },
-            previewer = false,
             initial_mode = "normal",
             -- theme = "dropdown",
             layout_config = {
@@ -177,9 +175,23 @@ return {
 
       telescope.load_extension("fzf")
       telescope.load_extension("ui-select")
-      telescope.load_extension("refactoring")
       telescope.load_extension("media_files")
       telescope.load_extension("live_grep_args")
+
+      local builtin = require("telescope.builtin")
+      local map = require("bjufre.keymaps").remap
+
+      -- map("n", "<leader>sp", function()
+      --   builtin.find_files({ no_ignore = true })
+      -- end, { desc = "[S]earch [P]roject" })
+      map("n", "<leader>fp", builtin.find_files, { desc = "[F]ind [P]roject" })
+      map("n", "<leader>fg", builtin.live_grep, { desc = "[F]ind by [G]rep" })
+      map("n", "<leader>fd", builtin.diagnostics, { desc = "[F]ind [D]iagnostics" })
+      map("n", "<leader>fr", builtin.resume, { desc = "[F]ind [R]esume" })
+      -- map("n", "<leader>fh", builtin.help_tags, { desc = "[F]ind [H]elp" })
+      map("n", "<leader>fk", builtin.keymaps, { desc = "[F]ind [K]eymaps" })
+      map("n", "<leader>f.", builtin.oldfiles, { desc = '[F]ind [R]ecent files ("." for repeat)' })
+      map("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
     end,
   },
 }

@@ -5,29 +5,14 @@ return {
 
   -- Colorscheme
   { "folke/tokyonight.nvim", enabled = true },
-  { "rose-pine/neovim", name = "rose-pine", enabled = true },
+  { "rose-pine/neovim", name = "rose-pine", enabled = false },
   { "catppuccin/nvim", name = "catppuccin", enabled = true },
-  { "projekt0n/github-nvim-theme", enabled = true },
-  { "gbprod/nord.nvim", name = "nord", enabled = true },
+  { "gbprod/nord.nvim", name = "nord", enabled = false },
+  { "AlexvZyl/nordic.nvim", name = "nordic", enabled = true },
 
   "moll/vim-bbye", -- Better buffer delete and wipeout,
 
-  "norcalli/nvim-colorizer.lua",
   { "tpope/vim-sleuth", enabled = true },
   { "tpope/vim-abolish", enabled = true },
   "gpanders/editorconfig.nvim",
-  {
-    "kylechui/nvim-surround",
-    opts = {},
-  },
-  {
-    "junegunn/vim-easy-align",
-    enabled = false,
-    keys = {
-      {
-        "<leader>ea",
-        ":EasyAlign*<Bar><Enter>",
-      },
-    },
-  },
 }

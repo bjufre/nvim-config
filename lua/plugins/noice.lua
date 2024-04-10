@@ -12,14 +12,14 @@ return {
   config = function()
     require("bjufre.keymaps").register({
       normal_mode = {
-        ["<C-j>"] = function()
+        ["<C-f>"] = function()
           if not require("noice.lsp").scroll(4) then
-            return "<C-d>"
+            return "<C-f>"
           end
         end,
-        ["<C-k>"] = function()
+        ["<C-b>"] = function()
           if not require("noice.lsp").scroll(-4) then
-            return "<C-k>"
+            return "<C-b>"
           end
         end,
       },

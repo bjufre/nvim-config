@@ -1,6 +1,4 @@
 local augroup = vim.api.nvim_create_augroup
-local BHGroup = augroup("BH", {})
-
 local autocmd = vim.api.nvim_create_autocmd
 local yank_group = augroup("HighlightYank", {})
 
@@ -14,13 +12,6 @@ autocmd("TextYankPost", {
       timeout = 60,
     })
   end,
-})
-
--- Remove whitespace at the end of lines
-autocmd({ "BufWritePre" }, {
-  group = BHGroup,
-  pattern = "*",
-  command = [[%s/\s\+$//e]],
 })
 
 -- Some useful formatting options so that we make our lifes easier
@@ -56,4 +47,16 @@ autocmd({ "BufEnter", "BufRead", "BufNewFile" }, {
 autocmd({ "BufEnter", "BufRead", "BufNewFile" }, {
   pattern = "*.kdl",
   command = [[set syntax=kdl]],
+})
+
+autocmd({ "BufNewFile", "BufRead" }, {
+  pattern = "*.keymap",
+  command = [[setlocal filetype=c]],
+})
+
+-- Fixes issue with `.` reseting the Ruby indentation scope before `end` keyword.
+-- See: https://github.com/tree-sitter/tree-sitter-ruby/issues/230
+autocmd({ "BufNewFile", "BufRead" }, {
+  pattern = "*.rb",
+  command = [[setlocal indentkeys-=.]],
 })

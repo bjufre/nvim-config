@@ -1,26 +1,13 @@
 local M = {}
 
-local elixir_on_attach = function(on_attach)
-  return function(client, bufnr)
-    local opts = { buffer = true, noremap = true }
-
-    on_attach(client, bufnr)
-    vim.keymap.set("n", "<leader>fp", ":ElixirFromPipe<CR>", opts)
-    vim.keymap.set("n", "<leader>tp", ":ElixirToPipe<CR>", opts)
-    vim.keymap.set("v", "<leader>em", ":ElixirExpandMacro<CR>", opts)
-  end
-end
-
-M.setup_nextls = function(on_attach)
+M.setup_nextls = function()
   local elixir = require("elixir")
   local elixirls = require("elixir.elixirls")
-  local attach_fn = elixir_on_attach(on_attach)
   local nextls_opts = {
     enable = true,
-    on_attach = attach_fn,
     init_options = {
       experimental = {
-        completions = { enable = false },
+        completions = { enable = true },
       },
     },
   }
@@ -40,19 +27,18 @@ M.setup_nextls = function(on_attach)
     credo = { enable = false },
     elixirls = {
       cmd = "/Users/bj/.local/share/nvim/mason/bin/elixir-ls",
-      enable = true, -- this needs to be enabled until `nextls` works with all the features that this does.
+      enable = false, -- this needs to be enabled until `nextls` works with all the features that this does.
       settings = elixirls.settings({
         mixEnv = "dev",
         fetchDeps = false,
         dialyzerEnabled = true,
         enableTestLenses = false,
       }),
-      on_attach = attach_fn,
     },
   })
 end
 
-M.setup_lexical = function(on_attach)
+M.setup_lexical = function()
   local lspconfig = require("lspconfig")
   local configs = require("lspconfig.configs")
 
@@ -76,14 +62,12 @@ M.setup_lexical = function(on_attach)
     }
   end
 
-  configs.lexical.setup({
-    on_attach = elixir_on_attach(on_attach),
-  })
+  configs.lexical.setup({})
 end
 
-M.setup = function(on_attach)
-  M.setup_nextls(on_attach)
-  -- M.setup_lexical(on_attach)
+M.setup = function()
+  -- M.setup_nextls()
+  M.setup_lexical()
 end
 
 return M

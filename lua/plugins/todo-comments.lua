@@ -50,5 +50,10 @@ return {
         test = { "Identifier", "#FF00FF" },
       },
     })
+
+    local map = require("bjufre.keymaps").remap
+
+    map("n", "<leader>st", ":TodoTelescope<CR>", { desc = "[S]earch [T]odos" })
+    map("n", "<leader>tt", ":TodoTrouble<CR>", { desc = "[T]odo [T]rouble" })
   end,
 }

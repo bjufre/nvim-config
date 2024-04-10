@@ -51,6 +51,7 @@ return {
         ---@type table
         toggler = {
           ---line-comment toggle
+          -- line = "<leader>cc",
           line = "<leader>cc",
           ---block-comment toggle
           block = "<leader>cb",
