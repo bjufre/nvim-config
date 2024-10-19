@@ -171,6 +171,13 @@ return {
             dynamicRegistration = false,
             lineFoldingOnly = true,
           },
+          -- Disable snippet support to remove LSP snippets and only have
+          -- the ones that we explicitly created.
+          completion = {
+            completionItem = {
+              snippetSupport = false,
+            },
+          },
         },
       })
 
@@ -202,12 +209,15 @@ return {
           },
         },
         html = {
-          filetypes = { "html", "erb", "eruby", "eelixir", "html", "liquid", "heex", "css" },
+          filetypes = { "html", "erb", "eruby", "eelixir", "html", "liquid", "heex", "templ", "css" },
           settings = {},
           init_options = {
             embeddedLanguages = { css = true, javascript = true },
             configurationSection = { "html", "css", "javascript" },
           },
+        },
+        htmx = {
+          filetypes = { "html", "templ" },
         },
         cssls = {
           settings = {
@@ -221,9 +231,10 @@ return {
         tailwindcss = {
           init_options = {
             userLanguages = {
-              elixir = "phoenix-heex",
               eruby = "erb",
+              templ = "html",
               heex = "phoenix-heex",
+              elixir = "phoenix-heex",
             },
           },
           settings = {
@@ -235,7 +246,42 @@ return {
               },
             },
           },
-          filetypes = { "erb", "eruby", "elixir", "eelixir", "html", "liquid", "heex", "css", "slim", "haml" },
+          filetypes = {
+            "ruby",
+            "erb",
+            "eruby",
+            "elixir",
+            "eelixir",
+            "html",
+            "liquid",
+            "heex",
+            "css",
+            "slim",
+            "haml",
+            "vue",
+          },
+        },
+        ruby_lsp = {},
+        rubocop = {
+          filetypes = { "ruby", "slim" },
+          cmd = {
+            "bundle",
+            "exec",
+            "rubocop",
+            "--lsp",
+          },
+        },
+        ts_ls = {
+          init_options = {
+            plugins = {
+              {
+                name = "@vue/typescript-plugin",
+                location = "/Users/bj/Library/pnpm/global/5/node_modules/@vue/typescript-plugin",
+                languages = { "vue" },
+              },
+            },
+          },
+          filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue", "json" },
         },
       }
 
@@ -244,19 +290,23 @@ return {
       vim.list_extend(ensure_installed, {
         "intelephense",
         "dockerls",
-        "solargraph",
+        -- "solargraph",
         "sqlls",
         "taplo",
-        "vuels",
-        "tsserver",
-        "rubocop",
+        "volar",
+        -- "ts_ls",
         "eslint",
         "prettier",
         "gopls",
-        "nextls",
+        "templ",
+        -- "nextls",
         -- "elixirls",
         "stylua",
+        "erb-formatter",
       })
+
+      -- Make sure that we have "temp" support for Neovim filetypes
+      vim.filetype.add({ extension = { templ = "templ" } })
 
       require("mason").setup({
         ui = {
@@ -279,15 +329,13 @@ return {
         },
       })
 
-      local lspconfig = require("lspconfig")
       local configs = require("lspconfig.configs")
 
       -- Gleam
       if not configs.gleam then
         configs.gleam = {
           default_config = {
-            -- cmd = { "gleam", "lsp" },
-            cmd = { "glas", "--stdio" },
+            cmd = { "gleam", "lsp" },
             name = "gleam",
             filetypes = { "gleam" },
             root_dir = require("lspconfig.util").root_pattern("gleam.toml", ".git"),
@@ -298,26 +346,6 @@ return {
 
       -- Elixir
       require("bjufre.lsp.elixir").setup()
-
-      -- Ruby
-      if not configs.fuzzy_ls then
-        configs.fuzzy_ls = {
-          default_config = {
-            cmd = { "/Users/bj/fuzzy_ruby_server/target/release/fuzzy" },
-            filetypes = { "ruby" },
-            root_dir = function(fname)
-              return lspconfig.util.find_git_ancestor(fname)
-            end,
-            settings = {},
-            init_options = {
-              allocationType = "ram",
-              indexGems = true,
-              reportDiagnostics = true,
-            },
-          },
-        }
-      end
-      lspconfig.fuzzy_ls.setup({})
 
       vim.diagnostic.config({ virtual_text = true })
     end,

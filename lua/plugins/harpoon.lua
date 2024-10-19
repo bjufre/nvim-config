@@ -37,7 +37,7 @@ return {
       toggle_telescope(harpoon:list())
     end, { desc = "[F]ind [H]arpoon marks" })
     map("n", "<leader>ha", function()
-      harpoon:list():append()
+      harpoon:list():add()
     end, { desc = "[H]arpoon [A]dd" })
     map("n", "<leader>hh", function()
       harpoon.ui:toggle_quick_menu(harpoon:list())

@@ -40,8 +40,8 @@ require("nord").setup({
   --- You can override specific highlights to use other groups or a hex color
   --- function will be called with all highlights and the colorScheme table
   on_highlights = function(hl, c)
-    hl.String = { fg = c.aurora.green, italic = true } -- a string constant: "this is a string"
-    hl["@string"] = { fg = c.aurora.green, italic = true } -- a string constant: "this is a string"
+    hl.String = { fg = c.aurora.green, italic = false } -- a string constant: "this is a string"
+    hl["@string"] = { fg = c.aurora.green, italic = false } -- a string constant: "this is a string"
 
     -- Whitespace
     -- hl.NonText = { fg = c.highlight_high }

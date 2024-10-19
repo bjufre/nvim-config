@@ -39,12 +39,12 @@ opt.colorcolumn = "120"
 -- BLOCK ALWAYS (with different colors based on mode)
 -- The colors are set in the `autocmds.lua` file.
 -- opt.guicursor =
--- "n-v-c:block-nCursor-blinkwait700-blinkoff400-blinkon250,i-ci-ve:block-iCursor,r-cr:hor20,o:hor50,sm:block-blinkwait175-blinkoff150-blinkon175"
+--   "n-v-c:block-nCursor-blinkwait700-blinkoff400-blinkon250,i-ci-ve:block-iCursor,r-cr:hor20,o:hor50,sm:block-blinkwait175-blinkoff150-blinkon175"
 
 -- BLOCK & THIN
 opt.guicursor =
-  -- "n-v-c:block-nCursor-blinkwait700-blinkoff400-blinkon250,i-ci-ve:ver50-iCursor,r-cr:hor20,o:hor50,sm:block-blinkwait175-blinkoff150-blinkon175"
-  "n-v-c:block-nCursor,i-ci-ve:ver50-iCursor,r-cr:hor20,o:hor50,sm:" -- No blinking
+  "n-v-c:block-nCursor-blinkwait700-blinkoff400-blinkon250,i-ci-ve:ver50-iCursor,r-cr:hor20,o:hor50,sm:block-blinkwait175-blinkoff150-blinkon175"
+-- "n-v-c:block-nCursor,i-ci-ve:ver50-iCursor,r-cr:hor20,o:hor50,sm:" -- No blinking
 
 -- BLOCK & UNDER
 -- opt.guicursor = "n-v-c:block-nCursor,i-ci-ve:hor20-iCursor,r-cr:hor20,o:hor50,sm:" -- No blinking

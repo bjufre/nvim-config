@@ -1,28 +1,27 @@
--- local C = require("nordic.colors")
--- local O = require("nordic.config").options
--- local U = require("nordic.utils")
-
 require("nordic").setup({
-  -- This callback can be used to override the colors used in the palette.
-  on_palette = function(palette)
-    return palette
-  end,
+  -- This callback can be used to override the colors used in the base palette.
+  on_palette = function(palette) end,
+  -- This callback can be used to override the colors used in the extended palette.
+  after_palette = function(palette) end,
+  -- This callback can be used to override highlights before they are applied.
+  on_highlight = function(highlights, palette) end,
   -- Enable bold keywords.
   bold_keywords = false,
   -- Enable italic comments.
   italic_comments = true,
-  -- Enable general editor background transparency.
-  transparent_bg = false,
+  -- Enable editor background transparency.
+  transparent = {
+    -- Enable transparent background.
+    bg = false,
+    -- Enable transparent background for floating windows.
+    float = false,
+  },
   -- Enable brighter float border.
   bright_border = false,
   -- Reduce the overall amount of blue in the theme (diverges from base Nord).
   reduced_blue = true,
   -- Swap the dark background with the normal one.
   swap_backgrounds = false,
-  -- Override the styling of any highlight group.
-  override = {
-    -- Comment = { fg = C.gray4 },
-  },
   -- Cursorline options.  Also includes visual/selection.
   cursorline = {
     -- Bold font in cursorline.
@@ -30,9 +29,9 @@ require("nordic").setup({
     -- Bold cursorline number.
     bold_number = true,
     -- Available styles: 'dark', 'light'.
-    theme = "light",
+    theme = "dark",
     -- Blending the cursorline bg with the buffer bg.
-    blend = 1, -- default: 0.85
+    blend = 0.85,
   },
   noice = {
     -- Available styles: `classic`, `flat`.

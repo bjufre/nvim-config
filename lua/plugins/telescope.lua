@@ -19,7 +19,7 @@ return {
     config = function()
       local telescope = require("telescope")
       local actions = require("telescope.actions")
-      local trouble = require("trouble.providers.telescope")
+      local trouble = require("trouble.sources.telescope")
       local icons = require("bjufre.icons")
       local lga_actions = require("telescope-live-grep-args.actions")
 
@@ -43,8 +43,8 @@ return {
       end
 
       local mappings = {
-        i = { ["<C-t>"] = trouble.open_with_trouble },
-        n = { ["<C-t>"] = trouble.open_with_trouble },
+        i = { ["<C-t>"] = trouble.open },
+        n = { ["<C-t>"] = trouble.open },
       }
 
       telescope.setup({

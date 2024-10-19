@@ -1,5 +1,5 @@
 require("catppuccin").setup({
-  flavour = "macchiato", -- latte, frappe, macchiato, mocha
+  flavour = "mocha", -- latte, frappe, macchiato, mocha
   background = { -- :h background
     light = "latte",
     dark = "mocha",
@@ -7,7 +7,7 @@ require("catppuccin").setup({
   transparent_background = false,
   term_colors = false,
   dim_inactive = {
-    enabled = false,
+    enabled = true,
     shade = "dark",
     percentage = 0.15,
   },
@@ -15,6 +15,7 @@ require("catppuccin").setup({
   no_bold = false, -- Force no bold
   styles = {
     comments = { "italic" },
+    -- comments = {},
     -- conditionals = { "italic" },
     conditionals = {},
     loops = {},
@@ -29,6 +30,7 @@ require("catppuccin").setup({
     numbers = {},
     booleans = {},
     properties = {},
+    -- types = { "italic" },
     types = {},
     operators = {},
   },

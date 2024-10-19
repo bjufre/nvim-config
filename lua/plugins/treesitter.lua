@@ -4,14 +4,48 @@ return {
     build = ":TSUpdate",
     dependencies = {
       "yioneko/nvim-yati",
+      "windwp/nvim-ts-autotag",
       "JoosepAlviste/nvim-ts-context-commentstring",
       "nvim-treesitter/nvim-treesitter-context",
       "nvim-treesitter/nvim-treesitter-textobjects",
-      "windwp/nvim-ts-autotag",
       "RRethy/nvim-treesitter-endwise",
       "nvim-treesitter/playground",
     },
     config = function()
+      require("nvim-ts-autotag").setup({
+        enable = true,
+        opts = {
+          enable_rename = true,
+          enable_close = true,
+          enable_on_slash = true,
+        },
+        filetypes = {
+          "html",
+          "javascript",
+          "typescript",
+          "javascriptreact",
+          "typescriptreact",
+          "svelte",
+          "vue",
+          "tsx",
+          "jsx",
+          "rescript",
+          "xml",
+          "php",
+          "markdown",
+          "glimmer",
+          "handlebars",
+          "hbs",
+          "ruby",
+          "eruby",
+          "blade",
+          "templ",
+          "elixir",
+          "heex",
+          "embedded_template",
+        },
+      })
+
       -- local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
       -- parser_config.iex = {
       --   install_info = {
@@ -108,35 +142,6 @@ return {
           -- Or a custom function return the final indent result.
           default_fallback = "auto",
         },
-        autotag = {
-          enable = true,
-          enable_rename = true,
-          enable_close = true,
-          enable_on_slash = true,
-          filetypes = {
-            "html",
-            "javascript",
-            "typescript",
-            "javascriptreact",
-            "typescriptreact",
-            "svelte",
-            "vue",
-            "tsx",
-            "jsx",
-            "rescript",
-            "xml",
-            "php",
-            "markdown",
-            "glimmer",
-            "handlebars",
-            "hbs",
-            "blade",
-            "templ",
-            "elixir",
-            "heex",
-            "ex",
-          },
-        },
         endwise = {
           enable = true,
         },
@@ -211,32 +216,6 @@ return {
               ["<leader>A"] = "@parameter.inner",
             },
           },
-        },
-      })
-    end,
-  },
-  {
-    "windwp/nvim-ts-autotag", -- Support for autoclosing tags,
-    config = function()
-      require("nvim-ts-autotag").setup({
-        filetypes = {
-          "html",
-          "javascript",
-          "typescript",
-          "javascriptreact",
-          "typescriptreact",
-          "svelte",
-          "vue",
-          "tsx",
-          "jsx",
-          "rescript",
-          "xml",
-          "php",
-          "markdown",
-          "glimmer",
-          "handlebars",
-          "hbs",
-          "eruby",
         },
       })
     end,

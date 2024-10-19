@@ -7,7 +7,8 @@ M.setup_nextls = function()
     enable = true,
     init_options = {
       experimental = {
-        completions = { enable = true },
+        -- completions = { enable = true },
+        completions = { enable = false },
       },
     },
   }
@@ -27,7 +28,7 @@ M.setup_nextls = function()
     credo = { enable = false },
     elixirls = {
       cmd = "/Users/bj/.local/share/nvim/mason/bin/elixir-ls",
-      enable = false, -- this needs to be enabled until `nextls` works with all the features that this does.
+      enable = true, -- this needs to be enabled until `nextls` works with all the features that this does.
       settings = elixirls.settings({
         mixEnv = "dev",
         fetchDeps = false,

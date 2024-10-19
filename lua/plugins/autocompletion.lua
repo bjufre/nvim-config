@@ -79,7 +79,7 @@ return {
           -- Kind icons
           vim_item.kind = string.format("%s %s", icons[vim_item.kind], vim_item.kind)
           -- Source
-          local remove_source = false
+          local remove_source = true
           -- NOTE: Order matters
           local sources_menu = {
             nvim_lsp = "[LSP]",

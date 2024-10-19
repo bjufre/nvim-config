@@ -5,7 +5,7 @@ vim.g.loaded_netrwPlugin = 1
 return {
   "stevearc/oil.nvim",
   dependencies = { "nvim-tree/nvim-web-devicons" },
-  enabled = false,
+  enabled = true,
   -- No need to copy this inside `setup()`. Will be used automatically.
   config = function()
     require("oil").setup({
@@ -172,6 +172,31 @@ return {
       },
     })
 
-    require("bjufre.keymaps").remap("n", "-", require("oil").open, { desc = "+Oil: Open" })
+    local remap = require("bjufre.keymaps").remap
+
+    remap("n", "-", require("oil").open, { desc = "+Oil: Open" })
+    -- Open parent directory in floating window + preview
+    remap("n", "<space>-", function()
+      local oil = require("oil")
+      local util = require("oil.util")
+
+      oil.toggle_float()
+      util.run_after_load(0, function()
+        oil.select({ preview = true })
+      end)
+    end, { desc = "+Oil: Toggle floating window" })
+    -- Close floating window with `<ESC>`
+    vim.api.nvim_create_autocmd("User", {
+      group = vim.api.nvim_create_augroup("OilFloatClose", {}),
+      pattern = "OilEnter",
+      callback = function()
+        local actions = require("oil.actions")
+        local util = require("oil.util")
+
+        if util.is_floating_win() then
+          remap("n", "<ESC>", actions.close.callback, { buffer = true })
+        end
+      end,
+    })
   end,
 }

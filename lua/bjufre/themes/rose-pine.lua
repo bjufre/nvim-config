@@ -1,10 +1,11 @@
-local DISABLE_ITALICS = true
+local DISABLE_ITALICS = false
 
 local palette = require("rose-pine.palette")
 
 require("rose-pine").setup({
   --- @usage 'auto'|'main'|'moon'|'dawn'
   variant = "moon",
+  -- variant = "dawn",
   --- @usage 'main'|'moon'|'dawn'
   dark_variant = "moon",
   bold_vert_split = false,
@@ -46,14 +47,13 @@ require("rose-pine").setup({
   highlight_groups = {
     Italic = { italic = true },
     Comment = { italic = true },
-    Keyword = { italic = false },
+    Keyword = { italic = false, bold = false },
     Function = { italic = false },
     Variable = { italic = false },
     String = { italic = false },
-    ["@string"] = { italic = false },
 
     -- This fixes a few issues, specially with Elixir atoms
-    Identifier = { fg = palette.iris },
+    Identifier = { fg = palette.iris, bold = false, italic = false },
 
     -- Blend colours against the "base" background
     ColorColumn = { bg = palette.foam, blend = 10 },
@@ -62,8 +62,10 @@ require("rose-pine").setup({
 
     -- Whitespace
     NonText = { fg = palette.highlight_high },
-    IblIndent = { fg = palette.highlight_high },
-    IblScope = { fg = palette.muted },
+    -- IblIndent = { fg = palette.highlight_high },
+    IblIndent = { fg = palette.background },
+    -- IblScope = { fg = palette.muted },
+    IblScope = { fg = palette.highlight_high },
 
     -- Cursor
     Cursor = { fg = palette.base, bg = palette.pine },
