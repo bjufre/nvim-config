@@ -52,6 +52,11 @@ require("rose-pine").setup({
     Variable = { italic = false },
     String = { italic = false },
 
+    -- Disable italics for fuzzy matches in popoups
+    BlinkCmpLabelMatch = { italic = false },
+    CmpItemAbbrMatch = { italic = false },
+    CmpItemAbbrMatchFuzzy = { italic = false },
+
     -- This fixes a few issues, specially with Elixir atoms
     Identifier = { fg = palette.iris, bold = false, italic = false },
 
@@ -62,9 +67,7 @@ require("rose-pine").setup({
 
     -- Whitespace
     NonText = { fg = palette.highlight_high },
-    -- IblIndent = { fg = palette.highlight_high },
     IblIndent = { fg = palette.background },
-    -- IblScope = { fg = palette.muted },
     IblScope = { fg = palette.highlight_high },
 
     -- Cursor

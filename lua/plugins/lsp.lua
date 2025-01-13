@@ -1,36 +1,9 @@
 return {
   {
-    -- Needs to happen first in order to make sure that the hook is set for `sumneko_lua`
-    "folke/neodev.nvim",
-    config = function()
-      require("neodev").setup({
-        library = {
-          enabled = true, -- when not enabled, neodev will not change any settings to the LSP server
-          -- these settings will be used for your Neovim config directory
-          runtime = true, -- runtime path
-          types = true, -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
-          plugins = true, -- installed opt or start plugins in packpath
-          -- you can also specify the list of plugins to make available as a workspace library
-          -- plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
-        },
-        setup_jsonls = true, -- configures jsonls to provide completion for project specific .luarc.json files
-        -- for your Neovim config directory, the config.library settings will be used as is
-        -- for plugin directories (root_dirs having a /lua directory), config.library.plugins will be disabled
-        -- for any other directory, config.library.enabled will be set to false
-        override = function(root_dir, options) end,
-        -- With lspconfig, Neodev will automatically setup your lua-language-server
-        -- If you disable this, then you have to set {before_init=require("neodev.lsp").before_init}
-        -- in your lsp start options
-        lspconfig = true,
-        -- much faster, but needs a recent built of lua-language-server
-        -- needs lua-language-server >= 3.6.0
-        pathStrict = true,
-      })
-    end,
-  },
-  {
     "neovim/nvim-lspconfig",
     dependencies = {
+      "saghen/blink.cmp",
+
       -- LSP Support
       { "williamboman/mason.nvim" },
       { "WhoIsSethDaniel/mason-tool-installer.nvim" },
@@ -49,11 +22,6 @@ return {
       -- TODO: Figure out why this errors everytime we start NVIM
       -- { "sheerun/vim-polyglot" },
 
-      {
-        "elixir-tools/elixir-tools.nvim",
-        enabled = true,
-        dependencies = { "nvim-lua/plenary.nvim" },
-      },
       {
         "amadeus/vim-mjml",
         enabled = false,
@@ -96,6 +64,50 @@ return {
           require("luasnip").filetype_extend("ruby", { "rails" })
         end,
       },
+
+      {
+        "folke/lazydev.nvim",
+        ft = "lua", -- only load on lua files
+        opts = {
+          library = {
+            -- See the configuration section for more details
+            -- Load luvit types when the `vim.uv` word is found
+            { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+          },
+        },
+      },
+      {
+        "elixir-tools/elixir-tools.nvim",
+        enabled = false,
+        version = "*",
+        event = { "BufReadPre", "BufNewFile" },
+        config = function()
+          local elixir = require("elixir")
+          local elixirls = require("elixir.elixirls")
+
+          elixir.setup({
+            nextls = { enable = true },
+            elixirls = {
+              enable = true,
+              settings = elixirls.settings({
+                dialyzerEnabled = false,
+                enableTestLenses = false,
+              }),
+              on_attach = function(client, bufnr)
+                vim.keymap.set("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
+                vim.keymap.set("n", "<space>tp", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
+                vim.keymap.set("v", "<space>em", ":ElixirExpandMacro<cr>", { buffer = true, noremap = true })
+              end,
+            },
+            projectionist = {
+              enable = true,
+            },
+          })
+        end,
+        dependencies = {
+          "nvim-lua/plenary.nvim",
+        },
+      },
     },
     config = function()
       vim.api.nvim_create_autocmd("LspAttach", {
@@ -137,6 +149,9 @@ return {
           --  For example, in C this would take you to the header
           map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
+          -- Open the diagnostic float to read the entire message
+          map("<leader>od", vim.diagnostic.open_float, "[O]pen [D]iagnostic")
+
           -- CUSTOM restart function
           map("<leader>lr", require("bjufre.lsp.restart"), "[R]estart")
 
@@ -165,7 +180,7 @@ return {
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
       local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities(), {
+      capabilities = vim.tbl_deep_extend("force", capabilities, require("blink.cmp").get_lsp_capabilities(), {
         textDocument = {
           foldingRange = {
             dynamicRegistration = false,
@@ -180,31 +195,13 @@ return {
           },
         },
       })
-
       local servers = {
         lua_ls = {
-          -- cmd = {...},
-          -- filetypes { ...},
-          -- capabilities = {},
           settings = {
             Lua = {
-              runtime = { version = "LuaJIT" },
-              workspace = {
-                checkThirdParty = false,
-                -- Tells lua_ls where to find all the Lua files that you have loaded
-                -- for your neovim configuration.
-                library = {
-                  "${3rd}/luv/library",
-                  unpack(vim.api.nvim_get_runtime_file("", true)),
-                },
-                -- If lua_ls is really slow on your computer, you can try this instead:
-                -- library = { vim.env.VIMRUNTIME },
-              },
               completion = {
                 callSnippet = "Replace",
               },
-              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              -- diagnostics = { disable = { 'missing-fields' } },
             },
           },
         },
@@ -272,17 +269,54 @@ return {
           },
         },
         ts_ls = {
+          -- cmd = {
+          --   "/Users/bj/Library/pnpm/tsserver",
+          --   "-stdio",
+          -- },
           init_options = {
             plugins = {
               {
                 name = "@vue/typescript-plugin",
                 location = "/Users/bj/Library/pnpm/global/5/node_modules/@vue/typescript-plugin",
-                languages = { "vue" },
+                languages = { "javascript", "typescript", "vue" },
               },
             },
           },
           filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue", "json" },
         },
+        -- Elixir
+        -- TODO: Replace this onec the official LSP is out
+        --
+        elixirls = {
+          cmd = { "/Users/bj/.local/share/nvim/mason/bin/elixir-ls" },
+          settings = {
+            dialyzerEnabled = false,
+            enableTestLenses = false,
+          },
+        },
+        -- lexical = {
+        -- cmd = { "/Users/bj/.local/share/nvim/mason/bin/lexical" },
+        --   root_dir = function(fname)
+        --     return require("lspconfig.util").root_pattern("mix.exs", ".git")(fname) or vim.loop.cwd()
+        --   end,
+        --   filetypes = { "elixir", "eelixir", "heex" },
+        --   -- optional settings
+        --   settings = {},
+        -- },
+        -- nextls = {
+        --   cmd = { "/Users/bj/.local/share/nvim/mason/bin/nextls" },
+        --   --   cmd = { "nextls", "--stdio" },
+        --   init_options = {
+        --     extensions = {
+        --       credo = { enable = true },
+        --     },
+        --     experimental = {
+        --       completions = { enable = true },
+        --     },
+        --   },
+        -- },
+        -- gleam = {},
+        rust_analyzer = {},
       }
 
       local ensure_installed = vim.tbl_keys(servers)
@@ -290,17 +324,15 @@ return {
       vim.list_extend(ensure_installed, {
         "intelephense",
         "dockerls",
-        -- "solargraph",
         "sqlls",
         "taplo",
+
         "volar",
-        -- "ts_ls",
         "eslint",
         "prettier",
+
         "gopls",
         "templ",
-        -- "nextls",
-        -- "elixirls",
         "stylua",
         "erb-formatter",
       })
@@ -324,28 +356,11 @@ return {
             local server = servers[server_name] or {}
 
             server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
+            vim.inspect(server)
             require("lspconfig")[server_name].setup(server)
           end,
         },
       })
-
-      local configs = require("lspconfig.configs")
-
-      -- Gleam
-      if not configs.gleam then
-        configs.gleam = {
-          default_config = {
-            cmd = { "gleam", "lsp" },
-            name = "gleam",
-            filetypes = { "gleam" },
-            root_dir = require("lspconfig.util").root_pattern("gleam.toml", ".git"),
-          },
-        }
-      end
-      configs.gleam.setup({})
-
-      -- Elixir
-      require("bjufre.lsp.elixir").setup()
 
       vim.diagnostic.config({ virtual_text = true })
     end,

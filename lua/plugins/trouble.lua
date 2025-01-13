@@ -3,7 +3,7 @@ return {
   config = function()
     require("trouble").setup({
       -- "workspace_diagnostics", "document_diagnostics", "quickfix", "lsp_references", "loclist"
-      mode = "workspace_diagnostics",
+      mode = "document_diagnostics",
       position = "bottom", -- position of the list can be: bottom, top, left, right
       height = 15,
       padding = false,

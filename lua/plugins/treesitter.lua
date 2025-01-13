@@ -59,8 +59,6 @@ return {
 
       vim.g.skip_ts_context_commentstring_module = true
 
-      -- We've added a fix for the Ruby indentation in the `autocmds.lua` file.
-
       require("nvim-treesitter.configs").setup({
         -- A list of parser names, or "all"
         ensure_installed = {
@@ -108,6 +106,7 @@ return {
           enable_autocmd = false,
           config = {},
         },
+        -- We've added a fix for the Ruby indentation in the `autocmds.lua` file.
         indent = {
           enable = true,
           disable = {
@@ -119,28 +118,10 @@ return {
 
             "rust",
 
-            -- "elixir",
-            -- "eelixir",
-            -- "heex",
+            "elixir",
+            "eelixir",
+            "heex",
           },
-        },
-        yati = {
-          enable = true,
-
-          -- Disable by language, see `Supported languages`
-          disable = { "elixir" },
-
-          -- Whether or not enable lazy mode (recommend to enable this if bad indent happens frequently)
-          default_lazy = true,
-
-          supress_conflict_warning = true,
-
-          -- Determine the fallback method used when we cannot calculate indent by tree-sitter
-          --   "auto": fallback to vim auto indent
-          --   "asis": use current indent as-is
-          --   "cindent": see `:h cindent()`
-          -- Or a custom function return the final indent result.
-          default_fallback = "auto",
         },
         endwise = {
           enable = true,

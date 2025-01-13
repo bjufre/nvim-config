@@ -5,8 +5,20 @@ return {
 
   -- Colorscheme
   { "folke/tokyonight.nvim", enabled = true },
-  { "rose-pine/neovim", name = "rose-pine", enabled = true },
-  { "catppuccin/nvim", name = "catppuccin", enabled = true },
+  {
+    "rose-pine/neovim",
+    name = "rose-pine",
+    priority = 1000,
+    lazy = false,
+    enabled = true,
+  },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+    lazy = false,
+    enabled = true,
+  },
   {
     "olivercederborg/poimandres.nvim",
     lazy = false,
@@ -14,13 +26,12 @@ return {
     enabled = true,
   },
   {
-    "bettervim/yugen.nvim",
-    enabled = true,
+    "gbprod/nord.nvim",
+    name = "nord",
     lazy = false,
     priority = 1000,
+    enabled = true,
   },
-  { "gbprod/nord.nvim", name = "nord", enabled = true },
-  { "AlexvZyl/nordic.nvim", name = "nordic", enabled = true },
 
   "moll/vim-bbye", -- Better buffer delete and wipeout,
 

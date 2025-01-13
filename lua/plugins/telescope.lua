@@ -43,8 +43,8 @@ return {
       end
 
       local mappings = {
-        i = { ["<C-t>"] = trouble.open },
-        n = { ["<C-t>"] = trouble.open },
+        i = { ["<C-z>"] = trouble.open },
+        n = { ["<C-z>"] = trouble.open },
       }
 
       telescope.setup({

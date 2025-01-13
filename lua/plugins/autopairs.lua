@@ -1,12 +1,12 @@
 return {
   {
-    'windwp/nvim-autopairs',
-    dependencies = {
-      'hrsh7th/nvim-cmp' ,
-    },
+    "windwp/nvim-autopairs",
+    -- dependencies = {
+    --   "hrsh7th/nvim-cmp",
+    -- },
     config = function()
-      require('nvim-autopairs').setup({
-        disable_filetype = { 'TelescopePrompt', 'spectre_panel' },
+      require("nvim-autopairs").setup({
+        disable_filetype = { "TelescopePrompt", "spectre_panel" },
         disable_in_micro = false, -- disable when recording or execuring macro
         disable_in_visual_block = false, -- disable when insert after visual block mode
         ignored_next_char = [=[[%w%%%'[%"%.]]]=],
@@ -23,13 +23,13 @@ return {
         map_c_w = false, -- map <C-w> key to delete pair if possible
         -- Extra for TS server
         ts_config = {
-          javascript = { 'string', 'template_string' }, -- it will not add a pair on that treesitter node
+          javascript = { "string", "template_string" }, -- it will not add a pair on that treesitter node
         },
       })
 
       -- Add support for cmp
       -- https://github.com/windwp/nvim-autopairs#you-need-to-add-mapping-cr-on-nvim-cmp-setupcheck-readmemd-on-nvim-cmp-repo
-      require('cmp').event:on('confirm_done', require('nvim-autopairs.completion.cmp').on_confirm_done())
+      -- require('cmp').event:on('confirm_done', require('nvim-autopairs.completion.cmp').on_confirm_done())
     end,
-  }
+  },
 }
