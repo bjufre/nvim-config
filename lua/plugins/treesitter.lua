@@ -3,7 +3,6 @@ return {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     dependencies = {
-      "yioneko/nvim-yati",
       "windwp/nvim-ts-autotag",
       "JoosepAlviste/nvim-ts-context-commentstring",
       "nvim-treesitter/nvim-treesitter-context",
@@ -38,6 +37,7 @@ return {
           "hbs",
           "ruby",
           "eruby",
+          "slim",
           "blade",
           "templ",
           "elixir",
@@ -111,16 +111,15 @@ return {
           enable = true,
           disable = {
             "vue",
-            "javascript",
-            "typescript",
-            "javascriptreact",
-            "typescriptreact",
+            -- "javascript",
+            -- "typescript",
+            -- "javascriptreact",
+            -- "typescriptreact",
 
             "rust",
-
-            "elixir",
-            "eelixir",
-            "heex",
+            -- "elixir",
+            -- "eelixir",
+            -- "heex",
           },
         },
         endwise = {

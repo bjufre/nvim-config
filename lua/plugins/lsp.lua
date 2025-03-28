@@ -29,6 +29,7 @@ return {
       },
       {
         "mhanberg/output-panel.nvim",
+        enabled = false,
         event = "VeryLazy",
         config = function()
           require("output_panel").setup()
@@ -258,16 +259,16 @@ return {
             "vue",
           },
         },
-        ruby_lsp = {},
-        rubocop = {
-          filetypes = { "ruby", "slim" },
-          cmd = {
-            "bundle",
-            "exec",
-            "rubocop",
-            "--lsp",
-          },
-        },
+        -- ruby_lsp = {},
+        -- rubocop = {
+        --   filetypes = { "ruby", "slim" },
+        --   cmd = {
+        --     "bundle",
+        --     "exec",
+        --     "rubocop",
+        --     "--lsp",
+        --   },
+        -- },
         ts_ls = {
           -- cmd = {
           --   "/Users/bj/Library/pnpm/tsserver",
@@ -282,7 +283,7 @@ return {
               },
             },
           },
-          filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue", "json" },
+          filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
         },
         -- Elixir
         -- TODO: Replace this onec the official LSP is out
@@ -317,6 +318,9 @@ return {
         -- },
         -- gleam = {},
         rust_analyzer = {},
+
+        -- Zig
+        zls = {},
       }
 
       local ensure_installed = vim.tbl_keys(servers)
@@ -350,15 +354,44 @@ return {
         },
       })
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+
       require("mason-lspconfig").setup({
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
 
             server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-            vim.inspect(server)
             require("lspconfig")[server_name].setup(server)
           end,
+        },
+      })
+
+      require("lspconfig").gleam.setup({ capabilities = capabilities })
+
+      require("lspconfig").ruby_lsp.setup({
+        capabilities = capabilities,
+        init_options = {
+          formatter = "standard",
+          linters = { "standard" },
+        },
+        addonSettings = {
+          ["Ruby LSP Rails"] = {},
+        },
+        cmd = {
+          "mise",
+          "x",
+          "--",
+          "ruby-lsp",
+        },
+      })
+      require("lspconfig").rubocop.setup({
+        capabilities = capabilities,
+        filetypes = { "ruby", "slim" },
+        cmd = {
+          "bundle",
+          "exec",
+          "rubocop",
+          "--lsp",
         },
       })
 

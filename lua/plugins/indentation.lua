@@ -21,6 +21,7 @@ return {
       },
       exclude = {
         filetypes = {
+          "slim",
           "lspinfo",
           "packer",
           "checkhealth",

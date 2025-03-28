@@ -2,16 +2,16 @@
 -- vim.g.tokyonight_colors = { hint = "orange", error = "#ff0000" }
 
 require("tokyonight").setup({
-  -- style = 'moon',
+  style = "moon",
   -- style = "storm",
-  style = "day",
+  -- style = "day",
   transparent = false,
   terminal_colors = true,
   styles = {
     -- Style to be applied to different syntax groups
     -- Value is any valid attr-list value for `:help nvim_set_hl`
     comments = { italic = true },
-    keywords = { italic = false },
+    keywords = { italic = true },
     functions = { italic = false },
     variables = { italic = false },
 

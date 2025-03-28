@@ -191,7 +191,7 @@ return {
       -- map("n", "<leader>fh", builtin.help_tags, { desc = "[F]ind [H]elp" })
       map("n", "<leader>fk", builtin.keymaps, { desc = "[F]ind [K]eymaps" })
       map("n", "<leader>f.", builtin.oldfiles, { desc = '[F]ind [R]ecent files ("." for repeat)' })
-      map("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
+      -- map("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
     end,
   },
 }

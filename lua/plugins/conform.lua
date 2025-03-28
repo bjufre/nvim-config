@@ -31,6 +31,9 @@ return {
         },
       },
       formatters_by_ft = {
+        elixir = { "mix" },
+        heex = { "mix" },
+        eelixir = { "mix" },
         gleam = { "gleam" },
 
         lua = { "stylua" },

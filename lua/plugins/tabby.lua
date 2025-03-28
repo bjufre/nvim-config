@@ -21,18 +21,18 @@ return {
       },
     })
 
-    require("bjufre.keymaps").register({
-      normal_mode = {
-        ["<C-m>"] = "1gt",
-        ["<C-n>"] = "2gt",
-        ["<C-e>"] = "3gt",
-        ["<C-i>"] = "4gt",
-        ["<C-o>"] = "5gt",
+    -- require("bjufre.keymaps").register({
+    --   normal_mode = {
+    --     ["<C-m>"] = "1gt",
+    --     ["<C-n>"] = "2gt",
+    --     ["<C-e>"] = "3gt",
+    --     ["<C-i>"] = "4gt",
+    --     ["<C-o>"] = "5gt",
 
-        -- Move tabs
-        ["<leader>tmn"] = ":+tabmove<CR>",
-        ["<leader>tmp"] = ":-tabmove<CR>",
-      },
-    })
+    --     -- Move tabs
+    --     ["<leader>tmn"] = ":+tabmove<CR>",
+    --     ["<leader>tmp"] = ":-tabmove<CR>",
+    --   },
+    -- })
   end,
 }
