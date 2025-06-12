@@ -5,6 +5,9 @@ return {
 
   -- use a release tag to download pre-built binaries
   version = "v0.*",
+  -- version = "v1.*",
+
+  build = "cargo build --release",
 
   ---@module 'blink.cmp'
   ---@type blink.cmp.Config
@@ -44,11 +47,15 @@ return {
       },
 
       -- experimental signature help support
-      signature = { enabled = true },
+      signature = {
+        enabled = true,
+      },
 
       completion = {
         accept = { auto_brackets = { enabled = true } },
+        documentation = { window = { border = "rounded" } },
         menu = {
+          border = "rounded",
           draw = {
             gap = 1,
             columns = { { "kind_icon" }, { "label", "label_description", gap = 1 } },

@@ -5,6 +5,8 @@ return {
 
   -- Colorscheme
   { "folke/tokyonight.nvim", enabled = true },
+
+  { "webhooked/kanso.nvim", enabled = true },
   {
     "rose-pine/neovim",
     name = "rose-pine",
@@ -28,7 +30,7 @@ return {
   {
     "gbprod/nord.nvim",
     name = "nord",
-    lazy = false,
+    lazy = true,
     priority = 1000,
     enabled = true,
   },

@@ -1,5 +1,6 @@
 -- require("bjufre.themes.tokyonight")
-require("bjufre.themes.catppuccin")
+-- require("bjufre.themes.catppuccin")
+-- require("bjufre.themes.kanso")
 -- require("bjufre.themes.poimandres")
 -- require("bjufre.themes.nord")
--- require("bjufre.themes.rose-pine")
+require("bjufre.themes.rose-pine")

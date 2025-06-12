@@ -41,9 +41,12 @@ require("catppuccin").setup({
       NonText = { fg = palette.surface1 },
       IblIndent = { fg = palette.surface1 },
       IblScope = { fg = palette.surface2 },
+      -- BlinkCmpMenu = {},
+      -- BlinkCmpBorder = { fg = palette.text },
     }
   end,
   integrations = {
+    blink_cmp = true,
     cmp = true,
     gitsigns = true,
     nvimtree = true,

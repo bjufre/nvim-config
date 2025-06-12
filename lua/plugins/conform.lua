@@ -2,7 +2,7 @@ return {
   "stevearc/conform.nvim",
   enabled = true,
   config = function()
-    local js_formatters = { "eslint", "prettier" }
+    local js_formatters = { "eslint_d", "prettier" }
 
     require("conform").setup({
       format_on_save = function(bufnr)
@@ -22,7 +22,7 @@ return {
         rubocop = {
           args = {
             -- "--server",
-            "--auto-correct-all",
+            "-A",
             "--stderr",
             "--force-exclusion",
             "--stdin",
@@ -47,7 +47,7 @@ return {
         javascriptreact = js_formatters,
         typescript = js_formatters,
         typescriptreact = js_formatters,
-
+        rust = { "rustfmt" },
         -- This will run in all files
         ["*"] = { "trim_whitespace" },
       },
