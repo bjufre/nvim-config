@@ -28,7 +28,7 @@ return {
       -- LSP Support
       { "williamboman/mason.nvim" },
       { "WhoIsSethDaniel/mason-tool-installer.nvim" },
-      { "williamboman/mason-lspconfig.nvim" },
+      { "williamboman/mason-lspconfig.nvim", enabled = true },
 
       -- Needed so that we can use the amazing power of Telescope for the `on_attach`
       "nvim-telescope/telescope.nvim",
@@ -92,7 +92,7 @@ return {
       },
       {
         "elixir-tools/elixir-tools.nvim",
-        enabled = true,
+        enabled = false,
         version = "*",
         event = { "BufReadPre", "BufNewFile" },
         config = function()
@@ -145,8 +145,6 @@ return {
         },
       })
 
-      -- local mason_packages = vim.fn.stdpath("data") .. "/mason/packages"
-
       local servers = {
         lua_ls = {
           settings = {
@@ -176,9 +174,14 @@ return {
         },
         tailwindcss = {
           init_options = {
+            includeLanguages = {
+              ruby = "html",
+              erb = "html",
+            },
             userLanguages = {
               eruby = "erb",
               templ = "html",
+              ruby = "html",
               heex = "phoenix-heex",
               elixir = "phoenix-heex",
             },
@@ -188,6 +191,7 @@ return {
               experimental = {
                 classRegex = {
                   [[class: "([^"]*)]],
+                  "%w\\[([^\\]]*)\\]",
                 },
               },
             },
@@ -208,7 +212,22 @@ return {
           },
         },
         ts_ls = {
-          init_options = {},
+          init_options = {
+            plugins = {
+              {
+                name = "@vue/typescript-plugin",
+                location = "/Users/bj/Library/pnpm/global/5/node_modules/@vue/typescript-plugin",
+                languages = { "javascript", "typescript", "vue" },
+              },
+            },
+          },
+          filetypes = {
+            "javascript",
+            "javascriptreact",
+            "typescript",
+            "typescriptreact",
+            "vue",
+          },
           settings = {
             typescript = {
               inlayHints = {
@@ -227,8 +246,7 @@ return {
         -- vue_ls = {},
 
         -- Elixir
-        -- TODO: Replace this once the official LSP is out
-        -- elixirls = {},
+        expert = {},
 
         -- gleam = {},
         -- rust_analyzer = {},
@@ -262,17 +280,12 @@ return {
       })
       require("mason-tool-installer").setup({ ensure_installed = tools_ensure_installed })
 
+      vim.lsp.config("*", { capabilities = capabilities })
+
       require("mason-lspconfig").setup({
+        automatic_enable = true,
         automatic_installation = true,
         ensure_installed = servers_ensure_installed,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-
-            server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-            require("lspconfig")[server_name].setup(server)
-          end,
-        },
       })
 
       require("lspconfig").volar.setup({
