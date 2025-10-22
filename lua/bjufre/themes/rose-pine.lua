@@ -1,6 +1,6 @@
-local DISABLE_ITALICS = false
+local DISABLE_ITALICS = true
 
-local palette = require("rose-pine.palette")
+-- local palette = require("rose-pine.palette")
 
 require("rose-pine").setup({
   --- @usage 'auto'|'main'|'moon'|'dawn'
@@ -21,7 +21,7 @@ require("rose-pine").setup({
     panel = "surface",
     panel_nc = "base",
     border = "highlight_med",
-    comment = "muted",
+    -- comment = "muted",
     link = "iris",
     punctuation = "subtle",
 
@@ -58,22 +58,22 @@ require("rose-pine").setup({
     CmpItemAbbrMatchFuzzy = { italic = false },
 
     -- This fixes a few issues, specially with Elixir atoms
-    Identifier = { fg = palette.iris, bold = false, italic = false },
+    -- Identifier = { fg = palette.iris, bold = false, italic = false },
 
     -- Blend colours against the "base" background
-    ColorColumn = { bg = palette.foam, blend = 10 },
-    CursorLine = { bg = palette.foam, blend = 10 },
-    StatusLine = { fg = palette.love, bg = "love", blend = 10 },
+    -- ColorColumn = { bg = palette.foam, blend = 10 },
+    -- CursorLine = { bg = palette.foam, blend = 10 },
+    -- StatusLine = { fg = palette.love, bg = "love", blend = 10 },
 
     -- Whitespace
-    NonText = { fg = palette.highlight_high },
-    IblIndent = { fg = palette.background },
-    IblScope = { fg = palette.highlight_high },
+    -- NonText = { fg = palette.highlight_high },
+    -- IblIndent = { fg = palette.background },
+    -- IblScope = { fg = palette.highlight_high },
 
     -- Cursor
-    Cursor = { fg = palette.base, bg = palette.pine },
-    nCursor = { fg = palette.base, bg = palette.pine },
-    iCursor = { fg = palette.base, bg = palette.love },
+    -- Cursor = { fg = palette.base, bg = palette.pine },
+    -- nCursor = { fg = palette.base, bg = palette.pine },
+    -- iCursor = { fg = palette.base, bg = palette.love },
   },
   before_highlight = function(group, highlight, palette)
     -- Disable all undercurls

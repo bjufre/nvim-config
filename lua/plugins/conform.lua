@@ -2,7 +2,8 @@ return {
   "stevearc/conform.nvim",
   enabled = true,
   config = function()
-    local js_formatters = { "eslint_d", "prettier" }
+    -- local js_formatters = { "eslint_d", "prettier" }
+    local js_formatters = { "eslint_d" }
 
     require("conform").setup({
       format_on_save = function(bufnr)
@@ -66,7 +67,6 @@ return {
     })
     vim.api.nvim_create_user_command("FormatEnable", function()
       vim.b.disable_autoformat = false
-      vim.g.disable_autoformat = false
     end, {
       desc = "Re-enable autoformat-on-save",
     })

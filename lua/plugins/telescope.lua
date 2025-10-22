@@ -185,6 +185,8 @@ return {
       --   builtin.find_files({ no_ignore = true })
       -- end, { desc = "[S]earch [P]roject" })
       map("n", "<leader>fp", builtin.find_files, { desc = "[F]ind [P]roject" })
+      map("n", "ff", builtin.find_files, { desc = "[F]ind [P]roject" })
+      map("n", "<leader>ff", builtin.find_files, { desc = "[F]ind [P]roject" })
       map("n", "<leader>fg", builtin.live_grep, { desc = "[F]ind by [G]rep" })
       map("n", "<leader>fd", builtin.diagnostics, { desc = "[F]ind [D]iagnostics" })
       map("n", "<leader>fr", builtin.resume, { desc = "[F]ind [R]esume" })

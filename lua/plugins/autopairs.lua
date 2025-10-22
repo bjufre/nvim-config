@@ -27,9 +27,11 @@ return {
         },
       })
 
-      -- Add support for cmp
+      -- Add support for blink.cmp
       -- https://github.com/windwp/nvim-autopairs#you-need-to-add-mapping-cr-on-nvim-cmp-setupcheck-readmemd-on-nvim-cmp-repo
-      -- require('cmp').event:on('confirm_done', require('nvim-autopairs.completion.cmp').on_confirm_done())
+      -- if pcall(require, 'blink.cmp') then
+      --   require('blink.cmp').event:on('confirm_done', require('nvim-autopairs.completion.cmp').on_confirm_done())
+      -- end
     end,
   },
 }
