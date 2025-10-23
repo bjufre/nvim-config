@@ -87,8 +87,7 @@ return {
         --     documentFormattingProvider = false,
         --   },
         -- },
-        vtsls = {
-          cmd = { "/Users/bj/.local/share/nvim/mason/bin/vtsls" },
+        ts_ls = {
           server_capabilities = {
             documentFormattingProvider = false,
           },
@@ -101,7 +100,19 @@ return {
             "typescript.tsx",
             "vue",
           },
+          init_options = {
+            plugins = {
+              {
+                name = "@vue/typescript-plugin",
+                location = vim.fn.stdpath("data")
+                  .. "/mason/packages/vue-language-server/node_modules/@vue/language-server",
+                languages = { "vue" },
+                configNamespace = "typescript",
+              },
+            },
+          },
         },
+
         -- denols = true,
         jsonls = {
           server_capabilities = {
@@ -248,8 +259,8 @@ return {
 
           vim.keymap.set("n", "<space>cr", vim.lsp.buf.rename, { buffer = 0 })
           vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, { buffer = 0 })
-          vim.keymap.set("n", "<space>wd", builtin.lsp_document_symbols, { buffer = 0 })
-          vim.keymap.set("n", "<space>ww", function()
+          vim.keymap.set("n", "<space>ds", builtin.lsp_document_symbols, { buffer = 0 })
+          vim.keymap.set("n", "<space>dd", function()
             builtin.diagnostics({ root_dir = true })
           end, { buffer = 0 })
 
