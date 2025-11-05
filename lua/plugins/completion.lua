@@ -66,21 +66,25 @@ return {
           components = {
             label = {
               text = function(ctx)
-                -- Simplified label formatting for better performance
-                local label = ctx.label
-                local converted_kind = require("blink.cmp.types").CompletionItemKind[ctx.kind]
+                -- -- Simplified label formatting for better performance
+                -- local label = ctx.label
+                -- local converted_kind = require("blink.cmp.types").CompletionItemKind[ctx.kind]
 
-                -- Only add space for non-function types
-                if
-                  converted_kind ~= require("blink.cmp.types").CompletionItemKind.Method
-                  and converted_kind ~= require("blink.cmp.types").CompletionItemKind.Function
-                  and converted_kind ~= require("blink.cmp.types").CompletionItemKind.Constructor
-                  and converted_kind ~= require("blink.cmp.types").CompletionItemKind.Snippet
-                then
-                  label = label .. " "
-                end
+                -- -- Only add space for non-function types
+                -- if
+                --   converted_kind ~= require("blink.cmp.types").CompletionItemKind.Method
+                --   and converted_kind ~= require("blink.cmp.types").CompletionItemKind.Function
+                --   and converted_kind ~= require("blink.cmp.types").CompletionItemKind.Constructor
+                --   and converted_kind ~= require("blink.cmp.types").CompletionItemKind.Snippet
+                -- then
+                --   label = label .. " "
+                -- end
 
-                return label .. (ctx.label_description or "")
+                -- return label .. (ctx.label_description or "")
+                return require("colorful-menu").blink_components_text(ctx)
+              end,
+              highlight = function(ctx)
+                return require("colorful-menu").blink_components_highlight(ctx)
               end,
             },
           },
@@ -88,7 +92,7 @@ return {
       },
       list = {
         selection = {
-          preselect = false,
+          preselect = true,
           auto_insert = true,
         },
         max_items = 40,
@@ -110,7 +114,7 @@ return {
     -- Default list of enabled providers defined so that you can extend it
     -- elsewhere in your config, without redefining it, due to `opts_extend`
     sources = {
-      default = { "lsp", "path", "snippets", "buffer" },
+      default = { "lsp", "path", "buffer", "snippets" },
       providers = {
         lsp = {
           name = "LSP",
@@ -131,9 +135,7 @@ return {
           name = "Buffer",
           module = "blink.cmp.sources.buffer",
           score_offset = -10,
-          opts = {
-            max_items = 5,
-          },
+          max_items = 5,
         },
       },
     },

@@ -3,7 +3,7 @@ return {
   enabled = true,
   config = function()
     -- local js_formatters = { "eslint_d", "prettier" }
-    local js_formatters = { "eslint_d" }
+    local js_formatters = { "eslint" }
 
     require("conform").setup({
       format_on_save = function(bufnr)

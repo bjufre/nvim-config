@@ -3,14 +3,16 @@ return {
   enabled = true,
   config = function()
     local lint = require("lint")
+    -- local js_linters = { "oxlint", "eslint" }
+    local js_linters = { "eslint" }
 
     lint.linters_by_ft = {
-      vue = { "eslint" },
-      svelte = { "eslint" },
-      javascript = { "eslint" },
-      javascriptreact = { "eslint" },
-      typescript = { "eslint" },
-      typescriptreact = { "eslint" },
+      vue = js_linters,
+      svelte = js_linters,
+      javascript = js_linters,
+      javascriptreact = js_linters,
+      typescript = js_linters,
+      typescriptreact = js_linters,
 
       ruby = { "rubocop" },
 

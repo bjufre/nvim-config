@@ -36,6 +36,16 @@ return {
         capabilities = require("blink.cmp").get_lsp_capabilities()
       end
 
+      local vue_language_server_path = vim.fn.stdpath("data")
+        .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
+      local tsserver_filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" }
+      local vue_plugin = {
+        name = "@vue/typescript-plugin",
+        location = vue_language_server_path,
+        languages = { "vue" },
+        configNamespace = "typescript",
+      }
+
       local servers = {
         bashls = true,
         gopls = {
@@ -75,43 +85,28 @@ return {
           },
         },
 
-        -- mojo = { manual_install = true },
-
         -- Enabled biome formatting, turn off all the other ones generally
         biome = true,
         astro = true,
-        -- ts_ls = {
-        --   root_dir = require("lspconfig").util.root_pattern "package.json",
-        --   single_file = false,
-        --   server_capabilities = {
-        --     documentFormattingProvider = false,
-        --   },
-        -- },
+        vue_ls = {},
         ts_ls = {
-          server_capabilities = {
-            documentFormattingProvider = false,
-          },
-          filetypes = {
-            "javascript",
-            "javascriptreact",
-            "javascript.jsx",
-            "typescript",
-            "typescriptreact",
-            "typescript.tsx",
-            "vue",
-          },
           init_options = {
             plugins = {
-              {
-                name = "@vue/typescript-plugin",
-                location = vim.fn.stdpath("data")
-                  .. "/mason/packages/vue-language-server/node_modules/@vue/language-server",
-                languages = { "vue" },
-                configNamespace = "typescript",
-              },
+              vue_plugin,
             },
           },
+          filetypes = tsserver_filetypes,
         },
+        -- vtsls = {
+        --   settings = {
+        --     tsserver = {
+        --       globalPlugins = {
+        --         vue_plugin,
+        --       },
+        --     },
+        --   },
+        --   filetypes = tsserver_filetypes,
+        -- },
 
         -- denols = true,
         jsonls = {
@@ -283,17 +278,7 @@ return {
         end,
       })
 
-      require("lsp_lines").setup()
       vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
-
-      vim.keymap.set("", "<leader>l", function()
-        local config = vim.diagnostic.config() or {}
-        if config.virtual_text then
-          vim.diagnostic.config({ virtual_text = false, virtual_lines = true })
-        else
-          vim.diagnostic.config({ virtual_text = true, virtual_lines = false })
-        end
-      end, { desc = "Toggle lsp_lines" })
     end,
   },
 }
