@@ -1,9 +1,8 @@
--- require("bjufre.themes.tokyonight")
--- require("bjufre.themes.catppuccin")
--- require("bjufre.themes.kanso")
+require("bjufre.themes.catppuccin")
+-- require("bjufre.themes.flexoki")
+-- require("bjufre.themes.github")
 -- require("bjufre.themes.poimandres")
--- require("bjufre.themes.nord")
-require("bjufre.themes.rose-pine")
+-- require("bjufre.themes.rose-pine")
 
 -- Configure Vue component highlighting
 vim.api.nvim_create_autocmd("ColorScheme", {

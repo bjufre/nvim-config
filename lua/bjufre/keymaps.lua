@@ -52,8 +52,8 @@ function M.register_defaults()
   -- M.remap("n", "<C-b>", "<C-w>s", { desc = "[S]plit [B]ottom" })
   -- Tabs navigation
   M.remap("n", "<C-i>", "")
-  -- M.remap("n", "<S-Tab>", ":tabprev<CR>", { desc = "[T]ab prev" })
-  -- M.remap("n", "<Tab>", ":tabnext<CR>", { desc = "[T]ab next" })
+  M.remap("n", "<S-Tab>", ":tabprev<CR>", { desc = "[T]ab prev" })
+  M.remap("n", "<Tab>", ":tabnext<CR>", { desc = "[T]ab next" })
 
   -- Resize with arrows
   M.remap("n", "<S-Up>", ":resize -2<CR>", { desc = "Resize up" })

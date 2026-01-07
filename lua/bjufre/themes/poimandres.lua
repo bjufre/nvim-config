@@ -13,6 +13,9 @@ require("poimandres").setup({
     LspReferenceText = { bg = p.background1 },
     LspReferenceRead = { bg = p.background1 },
     LspReferenceWrite = { bg = p.background1 },
+
+    LspSignatureActiveParameter = { bg = p.background1, bold = true },
+
     -- Whitespace
     NonText = { fg = p.background1 },
     IblIndent = { fg = p.background1 },

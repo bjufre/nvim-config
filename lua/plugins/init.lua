@@ -4,9 +4,6 @@ return {
   "kyazdani42/nvim-web-devicons",
 
   -- Colorscheme
-  { "folke/tokyonight.nvim", enabled = true },
-
-  { "webhooked/kanso.nvim", enabled = true },
   {
     "rose-pine/neovim",
     name = "rose-pine",
@@ -24,13 +21,6 @@ return {
   {
     "olivercederborg/poimandres.nvim",
     lazy = false,
-    priority = 1000,
-    enabled = true,
-  },
-  {
-    "gbprod/nord.nvim",
-    name = "nord",
-    lazy = true,
     priority = 1000,
     enabled = true,
   },

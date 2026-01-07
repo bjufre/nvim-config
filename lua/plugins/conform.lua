@@ -12,12 +12,12 @@ return {
           return
         end
 
-        -- Do not ad timeout to Ruby files since Rubocop might take a while...
-        if vim.b[bufnr].filetype == "ruby" then
-          return { lsp_fallback = true }
+        -- Do not add timeout to Ruby files since Rubocop might take a while...
+        if vim.bo[bufnr].filetype == "ruby" then
+          return { lsp_format = "fallback" }
         end
 
-        return { timeout_ms = 1000, lsp_fallback = true }
+        return { timeout_ms = 1000, lsp_format = "fallback" }
       end,
       formatters = {
         rubocop = {
@@ -67,6 +67,7 @@ return {
     })
     vim.api.nvim_create_user_command("FormatEnable", function()
       vim.b.disable_autoformat = false
+      vim.g.disable_autoformat = false
     end, {
       desc = "Re-enable autoformat-on-save",
     })

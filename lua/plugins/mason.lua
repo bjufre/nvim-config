@@ -2,6 +2,7 @@ return {
   "williamboman/mason.nvim",
   build = ":MasonUpdate",
   cmd = "Mason",
+  lazy = false,
   opts = {
     ui = {
       icons = {
@@ -11,13 +12,15 @@ return {
       },
     },
   },
-  config = function()
+  config = function(_, opts)
+    require("mason").setup(opts)
+
     local mr = require("mason-registry")
 
     -- Ensure required packages
     local required_packages = {
       "vue-language-server",
-      "typescript-language-server",
+      -- "typescript-language-server",
       "lua-language-server",
       "html-lsp",
       "css-lsp",
@@ -26,19 +29,21 @@ return {
       "dockerfile-language-server",
       "sqlls",
       "taplo",
-      "expert",
       "prettier",
       "stylua",
       "erb-formatter",
       "eslint-lsp",
     }
 
-    for _, pkg in ipairs(required_packages) do
-      if not mr.is_installed(pkg) then
-        vim.notify("Installing " .. pkg .. "...", vim.log.levels.INFO)
-        mr.get_package(pkg):install()
+    -- Refresh registry and install packages asynchronously
+    mr.refresh(function()
+      for _, pkg_name in ipairs(required_packages) do
+        local ok, pkg = pcall(mr.get_package, pkg_name)
+        if ok and not pkg:is_installed() then
+          vim.notify("Installing " .. pkg_name .. "...", vim.log.levels.INFO)
+          pkg:install()
+        end
       end
-    end
+    end)
   end,
 }
-

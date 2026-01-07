@@ -2,21 +2,19 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
+    lazy = false,
     dependencies = {
       "windwp/nvim-ts-autotag",
       "JoosepAlviste/nvim-ts-context-commentstring",
       "nvim-treesitter/nvim-treesitter-context",
-      "nvim-treesitter/nvim-treesitter-textobjects",
       "RRethy/nvim-treesitter-endwise",
-      "nvim-treesitter/playground",
     },
     config = function()
       require("nvim-ts-autotag").setup({
-        enable = true,
         opts = {
           enable_rename = true,
           enable_close = true,
-          enable_on_slash = true,
+          enable_close_on_slash = true,
         },
         filetypes = {
           "html",
@@ -46,158 +44,79 @@ return {
         },
       })
 
-      -- local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-      -- parser_config.iex = {
-      --   install_info = {
-      --     url = "/Users/mitchell/src/tree-sitter-iex", -- local path or git repo
-      --     files = { "src/parser.c" },                  -- note that some parsers also require src/scanner.c or src/scanner.cc
-      --     branch = "main",
-      --     generate_requires_npm = false,
-      --     requires_generate_from_grammar = false,
-      --   },
-      -- }
-
       vim.g.skip_ts_context_commentstring_module = true
 
-      require("nvim-treesitter.configs").setup({
-        -- A list of parser names, or "all"
-        ensure_installed = {
-          "vim",
-          "tsx",
-          "html",
-          "json",
-          "lua",
-          "css",
-          "scss",
-          -- "rust",
-          "ruby",
-          "erlang",
-          "eex",
-          "heex",
-          "elixir",
-          "gleam",
-          -- 'eelixir',
-          "gitignore",
-          "javascript",
-          "typescript",
-          "markdown",
-          "pug",
-          "sql",
-          "toml",
-          "vue",
-          "yaml",
-          -- "php",
-          "vim",
-          "jsdoc",
-          "go",
-          "templ",
-        },
-        -- Install parsers synchronously (only applied to `ensure_installed`)
-        sync_install = false,
-        -- Automatically install missing parsers when entering buffer
-        auto_install = true,
-        highlight = {
-          enable = true,
-          additional_vim_regex_highlighting = false,
-          disable = { "latex" },
-        },
-        ts_context_commentstring = {
-          enable = true,
-          enable_autocmd = false,
-          config = {},
-        },
-        -- We've added a fix for the Ruby indentation in the `autocmds.lua` file.
-        indent = {
-          enable = true,
-          disable = {
-            "vue",
-            -- "javascript",
-            -- "typescript",
-            -- "javascriptreact",
-            -- "typescriptreact",
+      -- List of parsers to install
+      local ensure_installed = {
+        "vim",
+        "vimdoc",
+        "tsx",
+        "html",
+        "json",
+        "lua",
+        "css",
+        "scss",
+        "ruby",
+        "erlang",
+        "eex",
+        "heex",
+        "elixir",
+        "gleam",
+        "gitignore",
+        "javascript",
+        "typescript",
+        "markdown",
+        "markdown_inline",
+        "pug",
+        "sql",
+        "toml",
+        "vue",
+        "yaml",
+        "jsdoc",
+        "go",
+        "templ",
+      }
 
-            "rust",
-            -- "elixir",
-            -- "eelixir",
-            -- "heex",
-          },
-        },
-        endwise = {
-          enable = true,
-        },
-        playground = {
-          enable = true,
-          disable = {},
-          updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-          persist_queries = false, -- Whether the query persists across vim sessions
-          keybindings = {
-            toggle_query_editor = "o",
-            toggle_hl_groups = "i",
-            toggle_injected_languages = "t",
-            toggle_anonymous_nodes = "a",
-            toggle_language_display = "I",
-            focus_language = "f",
-            unfocus_language = "F",
-            update = "R",
-            goto_node = "<cr>",
-            show_help = "?",
-          },
-        },
-        rainbow = { enable = false },
-        incremental_selection = {
-          enable = true,
-          keymaps = {
-            init_selection = "<C-space>",
-            node_incremental = "<C-space>",
-            scope_incremental = "<C-s>",
-            node_decremental = "<C-BS>",
-          },
-        },
-        textobjects = {
-          select = {
-            enable = true,
-            lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-            keymaps = {
-              -- You can use the capture groups defined in textobjects.scm
-              ["aa"] = "@parameter.outer",
-              ["ia"] = "@parameter.inner",
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              ["ic"] = "@class.inner",
-            },
-          },
-          move = {
-            enable = true,
-            set_jumps = true, -- whether to set jumps in the jumplist
-            goto_next_start = {
-              ["]m"] = "@function.outer",
-              ["]]"] = "@class.outer",
-            },
-            goto_next_end = {
-              ["]M"] = "@function.outer",
-              ["]["] = "@class.outer",
-            },
-            goto_previous_start = {
-              ["[m"] = "@function.outer",
-              ["[["] = "@class.outer",
-            },
-            goto_previous_end = {
-              ["[M"] = "@function.outer",
-              ["[]"] = "@class.outer",
-            },
-          },
-          swap = {
-            enable = true,
-            swap_next = {
-              ["<leader>a"] = "@parameter.inner",
-            },
-            swap_previous = {
-              ["<leader>A"] = "@parameter.inner",
-            },
-          },
-        },
+      -- Install ensure_installed parsers on startup
+      vim.schedule(function()
+        for _, lang in ipairs(ensure_installed) do
+          local ok = pcall(vim.treesitter.language.inspect, lang)
+          if not ok then
+            pcall(function()
+              vim.cmd("TSInstall! " .. lang)
+            end)
+          end
+        end
+      end)
+
+      -- Enable highlighting, indentation for supported filetypes
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function()
+          local ft = vim.bo.filetype
+          -- Skip for these filetypes
+          local disabled_indent = { vue = true, rust = true }
+
+          pcall(vim.treesitter.start)
+
+          if not disabled_indent[ft] then
+            vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
       })
+
+      -- Incremental selection keymaps
+      vim.keymap.set("n", "<C-space>", function()
+        require("nvim-treesitter.incremental_selection").init_selection()
+      end, { desc = "Start incremental selection" })
+      vim.keymap.set("v", "<C-space>", function()
+        require("nvim-treesitter.incremental_selection").node_incremental()
+      end, { desc = "Increment selection" })
+      vim.keymap.set("v", "<C-s>", function()
+        require("nvim-treesitter.incremental_selection").scope_incremental()
+      end, { desc = "Increment scope" })
+      vim.keymap.set("v", "<C-BS>", function()
+        require("nvim-treesitter.incremental_selection").node_decremental()
+      end, { desc = "Decrement selection" })
     end,
   },
   {

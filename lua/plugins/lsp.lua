@@ -9,6 +9,7 @@ return {
         ft = "lua",
         opts = {
           library = {
+            "nvim-dap-ui",
             -- Load luvit types when the `vim.uv` word is found
             { path = "luvit-meta/library", words = { "vim%.uv" } },
             { path = "/usr/share/awesome/lib/", words = { "awesome" } },
@@ -89,6 +90,14 @@ return {
         biome = true,
         astro = true,
         vue_ls = {},
+        -- tsgo = {
+        --   init_options = {
+        --     plugins = {
+        --       vue_plugin,
+        --     },
+        --   },
+        --   filetypes = tsserver_filetypes,
+        -- },
         ts_ls = {
           init_options = {
             plugins = {
@@ -229,9 +238,17 @@ return {
         vim.lsp.enable(name)
       end
 
+      vim.lsp.enable({ "tsgo" })
+
       local disable_semantic_tokens = {
         -- lua = true,
       }
+
+      -- vim.api.nvim_create_autocmd("CursorHold", {
+      --   callback = function(_args)
+      --     vim.diagnostic.open_float({ scope = "line" })
+      --   end,
+      -- })
 
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
@@ -251,6 +268,12 @@ return {
           vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = 0 })
           vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, { buffer = 0 })
           vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = 0 })
+          vim.keymap.set("n", "D", function()
+            vim.diagnostic.open_float({ scope = "line" })
+          end, { buffer = 0 })
+          vim.keymap.set("n", "T", function()
+            vim.lsp.buf.definition()
+          end, { buffer = 0 })
 
           vim.keymap.set("n", "<space>cr", vim.lsp.buf.rename, { buffer = 0 })
           vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, { buffer = 0 })
