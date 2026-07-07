@@ -17,9 +17,21 @@ return {
         },
       },
       { "Bilal2453/luvit-meta", lazy = true },
-      "williamboman/mason.nvim",
+      {
+        "williamboman/mason.nvim",
+        build = ":MasonUpdate",
+        cmd = "Mason",
+        opts = {
+          ui = {
+            icons = {
+              package_installed = "✓",
+              package_pending = "➜",
+              package_uninstalled = "✗",
+            },
+          },
+        },
+      },
       "williamboman/mason-lspconfig.nvim",
-      "WhoIsSethDaniel/mason-tool-installer.nvim",
 
       { "j-hui/fidget.nvim", opts = {} },
       { "https://git.sr.ht/~whynothugo/lsp_lines.nvim" },
@@ -32,14 +44,18 @@ return {
       -- { dir = "~/plugins/ocaml.nvim" },
     },
     config = function()
-      local capabilities = nil
-      if pcall(require, "blink.cmp") then
-        capabilities = require("blink.cmp").get_lsp_capabilities()
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      local has_blink, blink = pcall(require, "blink.cmp")
+      if has_blink then
+        capabilities = blink.get_lsp_capabilities(nil, true)
       end
+
+      local env = require("bjufre.env")
 
       local vue_language_server_path = vim.fn.stdpath("data")
         .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
       local tsserver_filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" }
+
       local vue_plugin = {
         name = "@vue/typescript-plugin",
         location = vue_language_server_path,
@@ -50,7 +66,6 @@ return {
       local servers = {
         bashls = true,
         gopls = {
-          manual_install = true,
           settings = {
             gopls = {
               hints = {
@@ -68,7 +83,7 @@ return {
         glsl_analyzer = true,
         lua_ls = {
           cmd = { "lua-language-server" },
-          -- server_capabilities = {
+          -- capability_overrides = {
           --   semanticTokensProvider = vim.NIL,
           -- },
         },
@@ -89,7 +104,7 @@ return {
         -- Enabled biome formatting, turn off all the other ones generally
         biome = true,
         astro = true,
-        vue_ls = {},
+        vue_ls = env.with_node_path({}),
         -- tsgo = {
         --   init_options = {
         --     plugins = {
@@ -98,14 +113,14 @@ return {
         --   },
         --   filetypes = tsserver_filetypes,
         -- },
-        ts_ls = {
+        ts_ls = env.with_node_path({
           init_options = {
             plugins = {
               vue_plugin,
             },
           },
           filetypes = tsserver_filetypes,
-        },
+        }),
         -- vtsls = {
         --   settings = {
         --     tsserver = {
@@ -119,7 +134,7 @@ return {
 
         -- denols = true,
         jsonls = {
-          server_capabilities = {
+          capability_overrides = {
             documentFormattingProvider = false,
           },
           settings = {
@@ -131,7 +146,7 @@ return {
         },
 
         -- cssls = {
-        --   server_capabilities = {
+        --   capability_overrides = {
         --     documentFormattingProvider = false,
         --   },
         -- },
@@ -158,7 +173,7 @@ return {
           root_markers = { "mix.exs" },
         },
 
-        tailwindcss = {
+        tailwindcss = env.with_node_path({
           init_options = {
             userLanguages = {
               elixir = "phoenix-heex",
@@ -191,7 +206,7 @@ return {
               },
             },
           },
-        },
+        }),
       }
 
       -- require("ocaml").setup()
@@ -205,16 +220,36 @@ return {
         end
       end, vim.tbl_keys(servers))
 
-      require("mason").setup()
-      local ensure_installed = {
+      local lsp_servers_to_install = vim.list_extend({
+        "html",
+        "cssls",
+        "ruby_lsp",
+        "dockerls",
+        "sqlls",
+        "eslint",
+      }, servers_to_install)
+
+      require("mason-lspconfig").setup({
+        ensure_installed = lsp_servers_to_install,
+        automatic_enable = false,
+      })
+
+      local mr = require("mason-registry")
+      local non_lsp_tools = {
         "stylua",
-        "lua_ls",
+        "prettier",
+        "erb-formatter",
         "delve",
-        -- "tailwind-language-server",
       }
 
-      vim.list_extend(ensure_installed, servers_to_install)
-      require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
+      mr.refresh(function()
+        for _, tool in ipairs(non_lsp_tools) do
+          local ok, pkg = pcall(mr.get_package, tool)
+          if ok and not pkg:is_installed() then
+            pkg:install()
+          end
+        end
+      end)
 
       -- Set global capabilities for all LSP servers
       vim.lsp.config("*", {
@@ -232,13 +267,12 @@ return {
           -- Remove manual_install flag as it's not an LSP config field
           local lsp_config = vim.tbl_deep_extend("force", {}, config)
           lsp_config.manual_install = nil
+          lsp_config.capability_overrides = nil
           vim.lsp.config(name, lsp_config)
         end
 
         vim.lsp.enable(name)
       end
-
-      vim.lsp.enable({ "tsgo" })
 
       local disable_semantic_tokens = {
         -- lua = true,
@@ -253,7 +287,10 @@ return {
       vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
           local bufnr = args.buf
-          local client = assert(vim.lsp.get_client_by_id(args.data.client_id), "must have valid client")
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if client == nil then
+            return
+          end
 
           local settings = servers[client.name]
           if type(settings) ~= "table" then
@@ -288,8 +325,8 @@ return {
           end
 
           -- Override server capabilities
-          if settings.server_capabilities then
-            for k, v in pairs(settings.server_capabilities) do
+          if settings.capability_overrides then
+            for k, v in pairs(settings.capability_overrides) do
               if v == vim.NIL then
                 ---@diagnostic disable-next-line: cast-local-type
                 v = nil

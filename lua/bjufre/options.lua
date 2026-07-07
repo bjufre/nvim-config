@@ -1,6 +1,5 @@
 local opt = vim.opt
 
-opt.filetype = "utf-8"
 opt.showmode = true
 opt.showcmd = false
 opt.cmdheight = 0 -- Height of the command bar
@@ -9,9 +8,7 @@ opt.incsearch = true -- Makes searc act like search in modern browsers
 opt.number = true
 opt.relativenumber = true
 opt.ignorecase = true -- Ignore case when searching
-opt.tabstop = 4
-opt.softtabstop = 4
-opt.smartindent = true
+opt.softtabstop = 2
 opt.smartcase = true -- unless there's a capital letter in the query
 opt.hidden = true -- buffers stay around
 opt.equalalways = true -- Don't let windows change all the time
@@ -66,7 +63,7 @@ opt.expandtab = true
 opt.shiftwidth = 2 -- Number of spaces inserted with each indentation
 
 opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 opt.foldlevelstart = 9999
 -- opt.foldlevel = 0
 -- opt.foldlevel = 9999

@@ -2,31 +2,41 @@ return {
   "folke/trouble.nvim",
   config = function()
     require("trouble").setup({
-      -- "workspace_diagnostics", "document_diagnostics", "quickfix", "lsp_references", "loclist"
-      mode = "document_diagnostics",
-      position = "bottom", -- position of the list can be: bottom, top, left, right
-      height = 15,
-      padding = false,
-      action_keys = {
-        -- key mappings for actions in the trouble list
-        close = "q", -- close the list
-        cancel = "<esc>", -- cancel the preview and get back to your last window / buffer / cursor
-        refresh = "r", -- manually refresh
-        jump = { "<cr>", "<tab>" }, -- jump to the diagnostic or open / close folds
-        open_split = { "<c-x>" }, -- open buffer in new split
-        open_vsplit = { "<c-v>" }, -- open buffer in new vsplit
-        open_tab = { "<c-t>" }, -- open buffer in new tab
-        jump_close = { "o" }, -- jump to the diagnostic and close the list
-        toggle_mode = "m", -- toggle between "workspace" and "document" diagnostics mode
-        toggle_preview = "P", -- toggle auto_preview
-        hover = "K", -- opens a small popup with the full multiline message
-        preview = "p", -- preview the diagnostic location
-        close_folds = { "zM" }, -- close all folds
-        open_folds = { "zR" }, -- open all folds
-        toggle_fold = { "za" }, -- toggle fold of current file
+      auto_close = false,
+      auto_preview = true,
+      focus = false,
+      modes = {
+        diagnostics = {
+          auto_open = false,
+        },
       },
-      auto_jump = {},
-      use_diagnostic_signs = true,
+      keys = {
+        ["?"] = "help",
+        r = "refresh",
+        q = "close",
+        ["<cr>"] = "jump",
+        ["<c-s>"] = "jump_split",
+        ["<c-v>"] = "jump_vsplit",
+        ["<c-t>"] = "jump_tab",
+        o = "jump_close",
+        ["<esc>"] = "cancel",
+        m = "toggle_mode",
+        P = "toggle_preview",
+        K = "hover",
+        p = "preview",
+        zM = "fold_close_all",
+        zR = "fold_open_all",
+        za = "fold_toggle",
+      },
     })
+
+    -- Keymaps for opening trouble
+    local map = require("bjufre.keymaps").remap
+    map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Trouble: Diagnostics (all)" })
+    map("n", "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", { desc = "Trouble: Diagnostics (buffer)" })
+    map("n", "<leader>xl", "<cmd>Trouble loclist toggle<cr>", { desc = "Trouble: Location List" })
+    map("n", "<leader>xq", "<cmd>Trouble quickfix toggle<cr>", { desc = "Trouble: Quickfix" })
+    map("n", "<leader>xr", "<cmd>Trouble lsp_references toggle<cr>", { desc = "Trouble: LSP References" })
+    map("n", "<leader>xs", "<cmd>Trouble lsp_document_symbols toggle<cr>", { desc = "Trouble: Document Symbols" })
   end,
 }

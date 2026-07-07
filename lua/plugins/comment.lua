@@ -5,6 +5,10 @@ return {
       "JoosepAlviste/nvim-ts-context-commentstring",
     },
     config = function()
+      require("ts_context_commentstring").setup({
+        enable_autocmd = false,
+      })
+
       require("Comment").setup({
         -- pre_hook = function()
         --   return require('ts_context_commentstring.internal').calculate_commentstring()

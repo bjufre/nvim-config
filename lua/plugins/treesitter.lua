@@ -1,6 +1,7 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "main",
     build = ":TSUpdate",
     lazy = false,
     dependencies = {
@@ -46,77 +47,104 @@ return {
 
       vim.g.skip_ts_context_commentstring_module = true
 
-      -- List of parsers to install
-      local ensure_installed = {
-        "vim",
-        "vimdoc",
-        "tsx",
-        "html",
-        "json",
-        "lua",
+      local ts = require("nvim-treesitter")
+      ts.setup({
+        install_dir = vim.fn.stdpath("data") .. "/site",
+      })
+
+      local parsers = {
+        "bash",
         "css",
-        "scss",
-        "ruby",
-        "erlang",
         "eex",
-        "heex",
         "elixir",
-        "gleam",
+        "embedded_template",
+        "erlang",
         "gitignore",
+        "gleam",
+        "go",
+        "heex",
+        "html",
         "javascript",
-        "typescript",
+        "jsdoc",
+        "json",
+        "kdl",
+        "lua",
         "markdown",
         "markdown_inline",
         "pug",
+        "ruby",
+        "scss",
         "sql",
+        "templ",
         "toml",
+        "tsx",
+        "typescript",
+        "vim",
+        "vimdoc",
         "vue",
         "yaml",
-        "jsdoc",
-        "go",
-        "templ",
       }
 
-      -- Install ensure_installed parsers on startup
-      vim.schedule(function()
-        for _, lang in ipairs(ensure_installed) do
-          local ok = pcall(vim.treesitter.language.inspect, lang)
-          if not ok then
-            pcall(function()
-              vim.cmd("TSInstall! " .. lang)
-            end)
-          end
-        end
-      end)
+      vim.treesitter.language.register("bash", { "sh", "zsh" })
+      vim.treesitter.language.register("eex", "eelixir")
+      vim.treesitter.language.register("embedded_template", "eruby")
+      vim.treesitter.language.register("tsx", { "javascriptreact", "typescriptreact" })
+      vim.treesitter.language.register("vimdoc", "help")
 
-      -- Enable highlighting, indentation for supported filetypes
+      ts.install(parsers)
+
+      local disabled_indent = { vue = true, rust = true }
+      local filetypes = {
+        "css",
+        "eex",
+        "eelixir",
+        "elixir",
+        "erlang",
+        "eruby",
+        "gitignore",
+        "gleam",
+        "go",
+        "heex",
+        "help",
+        "html",
+        "javascript",
+        "javascriptreact",
+        "jsdoc",
+        "json",
+        "kdl",
+        "lua",
+        "markdown",
+        "pug",
+        "ruby",
+        "scss",
+        "sh",
+        "sql",
+        "templ",
+        "toml",
+        "typescript",
+        "typescriptreact",
+        "vim",
+        "vue",
+        "yaml",
+        "zsh",
+      }
+
       vim.api.nvim_create_autocmd("FileType", {
+        pattern = filetypes,
         callback = function()
           local ft = vim.bo.filetype
-          -- Skip for these filetypes
-          local disabled_indent = { vue = true, rust = true }
-
-          pcall(vim.treesitter.start)
-
-          if not disabled_indent[ft] then
+          local ok = pcall(vim.treesitter.start)
+          -- Only set indentexpr if treesitter started successfully
+          if ok and not disabled_indent[ft] then
             vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
           end
         end,
       })
 
-      -- Incremental selection keymaps
-      vim.keymap.set("n", "<C-space>", function()
-        require("nvim-treesitter.incremental_selection").init_selection()
-      end, { desc = "Start incremental selection" })
-      vim.keymap.set("v", "<C-space>", function()
-        require("nvim-treesitter.incremental_selection").node_incremental()
-      end, { desc = "Increment selection" })
-      vim.keymap.set("v", "<C-s>", function()
-        require("nvim-treesitter.incremental_selection").scope_incremental()
-      end, { desc = "Increment scope" })
-      vim.keymap.set("v", "<C-BS>", function()
-        require("nvim-treesitter.incremental_selection").node_decremental()
-      end, { desc = "Decrement selection" })
+      vim.keymap.set("n", "<C-space>", "van", { desc = "Start node selection", remap = true })
+      vim.keymap.set("v", "<C-space>", "an", { desc = "Grow node selection", remap = true })
+      vim.keymap.set("v", "<C-s>", "an", { desc = "Grow node selection", remap = true })
+      vim.keymap.set("v", "<C-BS>", "in", { desc = "Shrink node selection", remap = true })
     end,
   },
   {

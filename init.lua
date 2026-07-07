@@ -2,6 +2,7 @@
 require("bjufre.options")
 require("bjufre.autocmds")
 require("bjufre.tabline")
+require("bjufre.env").ensure_node()
 
 -- Set the leader key early in the config so that any other keymaps
 -- set by plugins or other files are mapped correctly.

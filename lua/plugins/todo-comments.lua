@@ -2,7 +2,7 @@ return {
   "folke/todo-comments.nvim",
   enabled = true,
   dependencies = "nvim-lua/plenary.nvim",
-  cmd = { "TodoTrouble", "TodoTelescope" },
+  cmd = { "TodoTelescope" },
   event = { "BufReadPost", "BufNewFile" },
   config = function()
     local icons = require("bjufre.icons")
@@ -54,6 +54,6 @@ return {
     local map = require("bjufre.keymaps").remap
 
     map("n", "<leader>st", ":TodoTelescope<CR>", { desc = "[S]earch [T]odos" })
-    map("n", "<leader>tt", ":TodoTrouble<CR>", { desc = "[T]odo [T]rouble" })
+    map("n", "<leader>tt", "<cmd>Trouble todo toggle<cr>", { desc = "[T]odo [T]rouble" })
   end,
 }

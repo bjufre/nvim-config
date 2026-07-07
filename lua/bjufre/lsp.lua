@@ -1,5 +1,34 @@
 local M = {}
 
+local function is_elixir_project()
+  local current_dir = vim.uv.cwd()
+  if current_dir == nil then
+    return false
+  end
+
+  return vim.fs.root(current_dir, "mix.exs") ~= nil
+end
+
+local function restart_lsp()
+  vim.cmd("silent! lsp restart")
+end
+
+local function start_lsp()
+  vim.cmd("silent! lsp enable")
+end
+
+local function remove_directory(dir_name, description)
+  if vim.fn.isdirectory(dir_name) ~= 1 then
+    return
+  end
+
+  if vim.fn.delete(dir_name, "rf") == 0 then
+    vim.notify(string.format("Removed %s", description))
+  else
+    vim.notify(string.format("Could not remove %s", description), vim.log.levels.WARN)
+  end
+end
+
 function M.is_diagnostic()
   local cursor_pos = vim.api.nvim_win_get_cursor(0)
   local row = cursor_pos[1] - 1 -- Convert to 0-indexed
@@ -8,7 +37,8 @@ function M.is_diagnostic()
   local diagnostics = vim.diagnostic.get(0, { lnum = row })
 
   for _, diagnostic in ipairs(diagnostics) do
-    if col >= diagnostic.col and col <= diagnostic.end_col then
+    local end_col = diagnostic.end_col or diagnostic.col
+    if col >= diagnostic.col and col <= end_col then
       return true
     end
   end
@@ -17,121 +47,60 @@ function M.is_diagnostic()
 end
 
 function M.restart()
-  if not pcall(require, "lspconfig") then
-    return
-  end
-
-  if not pcall(require, "plenary") then
-    return
-  end
-
   -- If we're dealing with an Elixir project,
   -- remove the LSP created files too.
   -- Otherwise, just restart the instance.
-  if require("lspconfig.util").root_pattern("mix.exs")(vim.loop.cwd()) then
-    local Path = require("plenary.path")
-
+  if is_elixir_project() then
     vim.schedule(function()
       vim.defer_fn(function()
-        local function safe_remove(path_str, description)
-          local path = Path:new(path_str)
-          if path:exists() then
-            local success, err = pcall(function()
-              path:rm({ recursive = true })
-            end)
-
-            if not success then
-              vim.notify(
-                string.format("Warning: Could not remove %s (%s): %s", description, path_str, err),
-                vim.log.levels.WARN
-              )
-
-              local result = vim.fn.system(string.format("rm -rf %s", vim.fn.shellescape(path_str)))
-              if vim.v.shell_error ~= 0 then
-                vim.notify(
-                  string.format("Failed to remove %s with system command: %s", description, result),
-                  vim.log.levels.ERROR
-                )
-              else
-                vim.notify(string.format("Successfully removed %s using system command", description))
-              end
-            else
-              vim.notify(string.format("Successfully removed %s", description))
-            end
-          end
-        end
-
         -- safe_remove("deps", "Elixir Dependencies")
         -- safe_remove("_build", "Elixir build artifacts")
-        safe_remove(".elixir_ls", "Elixir LS cache")
-        safe_remove(".elixir-tools", "Elixir tools cache")
+        remove_directory(".elixir_ls", "Elixir LS cache")
+        remove_directory(".elixir-tools", "Elixir tools cache")
 
         -- Restart LSP after cleanup
         vim.defer_fn(function()
-          vim.cmd([[:LspRestart]])
+          restart_lsp()
         end, 500)
       end, 1000)
     end)
   else
     vim.schedule(function()
-      vim.cmd([[:LspRestart]])
+      restart_lsp()
     end)
   end
 end
 
 -- Alternative version with even more robust handling
 function M.restart_robust()
-  if not pcall(require, "lspconfig") then
-    return
-  end
-
-  if not pcall(require, "plenary") then
-    return
-  end
-
-  if require("lspconfig.util").root_pattern("mix.exs")(vim.loop.cwd()) then
+  if is_elixir_project() then
     vim.schedule(function()
       -- Get all active LSP clients
-      local clients = vim.lsp.get_active_clients()
+      local clients = vim.lsp.get_clients()
 
       -- Stop Elixir-related clients specifically
       for _, client in ipairs(clients) do
         if client.name == "elixirls" or client.name == "nextls" or client.name == "lexical" then
           vim.notify(string.format("Stopping %s LSP client", client.name))
-          client.stop()
+          client:stop()
         end
       end
 
       vim.defer_fn(function()
         -- Try to remove directories
-        local function remove_directory(dir_name)
-          local handle = vim.loop.fs_scandir(dir_name)
-          if handle then
-            -- Directory exists, try to remove it
-            local cmd = string.format("rm -rf %s", vim.fn.shellescape(dir_name))
-            local result = vim.fn.system(cmd)
-
-            if vim.v.shell_error == 0 then
-              vim.notify(string.format("Removed %s", dir_name))
-            else
-              vim.notify(string.format("Could not remove %s: %s", dir_name, result), vim.log.levels.WARN)
-            end
-          end
-        end
-
-        remove_directory(".elixir_ls")
-        remove_directory(".elixir-tools")
+        remove_directory(".elixir_ls", ".elixir_ls")
+        remove_directory(".elixir-tools", ".elixir-tools")
 
         -- Restart LSP
         vim.defer_fn(function()
-          vim.cmd([[:LspStart]])
+          start_lsp()
           vim.notify("LSP restarted")
         end, 1000)
       end, 1500)
     end)
   else
     vim.schedule(function()
-      vim.cmd([[:LspRestart]])
+      restart_lsp()
     end)
   end
 end
